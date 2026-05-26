@@ -2462,7 +2462,63 @@ function openWhatsApp() {
 function getUsers() {
   try { return JSON.parse(localStorage.getItem('etrade_users') || '[]'); } catch(e) { return []; }
 }
-function saveUsers(users) { localStorage.setItem('etrade_users', JSON.stringify(users)); }
+function saveUsers(users) {
+  localStorage.setItem('etrade_users', JSON.stringify(users));
+  // Firebase'e de kaydet
+  if (window._fbDb) {
+    window._fbSet(window._fbRef(window._fbDb, 'sekmen_users'), users)
+      .catch(e => console.warn('Firebase kullanıcı kayıt hatası:', e));
+  }
+}
+
+// Firebase'den kullanıcıları çek ve localStorage ile senkronize et
+async function syncUsersFromFirebase() {
+  if (!window._fbDb) return;
+  try {
+    const snap = await window._fbGet(window._fbRef(window._fbDb, 'sekmen_users'));
+    if (snap.exists()) {
+      const fbUsers = snap.val();
+      if (Array.isArray(fbUsers)) {
+        localStorage.setItem('etrade_users', JSON.stringify(fbUsers));
+      }
+    }
+  } catch(e) { console.warn('Firebase kullanıcı senkronizasyon hatası:', e); }
+}
+
+// Firebase kullanıcı değişikliklerini dinle (gerçek zamanlı)
+function listenUsersFirebase() {
+  if (!window._fbDb) return;
+  window._fbOnValue(window._fbRef(window._fbDb, 'sekmen_users'), snap => {
+    if (snap.exists()) {
+      const fbUsers = snap.val();
+      if (Array.isArray(fbUsers)) {
+        localStorage.setItem('etrade_users', JSON.stringify(fbUsers));
+        // Eğer kullanıcılar sayfasındaysak yenile
+        const activePage = document.querySelector('.page.active');
+        if (activePage && activePage.id === 'page-kullanicilar') renderUsers();
+        // Aktif oturumu kontrol et — kullanıcı silindiyse çıkış yaptır
+        checkActiveSession(fbUsers);
+      }
+    } else {
+      // Firebase'de kullanıcı yok — localStorage'ı temizle
+      localStorage.removeItem('etrade_users');
+    }
+  });
+}
+
+// Aktif oturumu Firebase'deki kullanıcı listesiyle karşılaştır
+function checkActiveSession(fbUsers) {
+  const session = JSON.parse(sessionStorage.getItem('etrade_session') || '{}');
+  if (!session.username || session.role === 'admin') return; // Admin her zaman geçerli
+  const stillExists = fbUsers.find(u => u.name === session.username);
+  if (!stillExists) {
+    // Kullanıcı Firebase'den silindi — oturumu kapat
+    addSecurityLog(session.username, '🚫 HESAP SİLİNDİ', 'Firebase'den kaldırıldı, oturum kapatıldı');
+    sessionStorage.removeItem('etrade_session');
+    toast('Hesabınız kaldırıldı. Çıkış yapılıyor...', '🚫', true);
+    setTimeout(() => { stopSessionTimer(); showLogin(); }, 2000);
+  }
+}
 
 // Tüm yetki ID'leri
 const ALL_PERMS = [
@@ -2615,10 +2671,13 @@ function renderUsers() {
 }
 
 function deleteUser(id) {
-  if (!confirm('Kullanıcı silinsin mi?')) return;
-  saveUsers(getUsers().filter(u=>u.id!==id));
+  const u = getUsers().find(x=>x.id===id);
+  if (!confirm(`"${u?.name}" kullanıcısı silinsin mi?\nBu kullanıcı artık hiçbir cihazdan giriş yapamaz.`)) return;
+  const newUsers = getUsers().filter(x=>x.id!==id);
+  saveUsers(newUsers); // localStorage + Firebase'e kaydet
   renderUsers();
-  toast('Kullanıcı silindi','🗑');
+  addSecurityLog(u?.name||'?', '🗑 HESAP SİLİNDİ', 'Admin tarafından kaldırıldı');
+  toast('Kullanıcı silindi — tüm cihazlarda geçersiz','🗑');
 }
 
 let _buyPriceVisible = false;
@@ -4921,8 +4980,12 @@ if (kasaDateEl) kasaDateEl.value = new Date().toISOString().split('T')[0];
 // Firebase sync başlat (module hazır olunca)
 if (window._firebaseReady) {
   initFirebaseSync();
+  syncUsersFromFirebase().then(() => listenUsersFirebase());
 } else {
-  window.addEventListener('firebaseReady', initFirebaseSync, { once: true });
+  window.addEventListener('firebaseReady', () => {
+    initFirebaseSync();
+    syncUsersFromFirebase().then(() => listenUsersFirebase());
+  }, { once: true });
 }
 </script>
 
