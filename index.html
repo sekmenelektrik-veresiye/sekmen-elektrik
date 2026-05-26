@@ -1433,7 +1433,8 @@ window.dispatchEvent(new Event('firebaseReady'));
       <button class="modal-close" onclick="closeModal('custDetail')">×</button>
     </div>
     <div class="modal-body" id="custDetailBody"></div>
-    <div class="modal-footer">
+    <div class="modal-footer" id="custDetailFooter">
+      <button class="btn btn-danger btn-sm" id="custDetailDeleteBtn" onclick="deleteCustFromDetail()">🗑 Müşteriyi Sil</button>
       <button class="btn btn-secondary" onclick="closeModal('custDetail')">Kapat</button>
     </div>
   </div>
@@ -1902,12 +1903,45 @@ function renderCustomers(filter='') {
         <button class="btn btn-secondary btn-sm" style="border-color:var(--accent);color:var(--accent)" onclick="printEkstre('${c.id}')">🖨 Ekstre</button>
         <button class="btn btn-secondary btn-sm" style="border-color:var(--accent2);color:var(--accent2)" onclick="openTeklifFor('${c.id}')">📄 Teklif</button>
         ${c.phone ? `<button class="wa-btn" onclick="sendWhatsApp('${c.id}')">💬 WA</button>` : ''}
+        <button class="btn btn-danger btn-sm" onclick="deleteCustomer('${c.id}')" title="Müşteriyi Sil">🗑</button>
       </td>
     </tr>`;
   }).join('');
 }
 
 function filterCustomers(v) { renderCustomers(v); }
+
+let _currentCustDetailId = null;
+
+function deleteCustFromDetail() {
+  if (!_currentCustDetailId) return;
+  closeModal('custDetail');
+  deleteCustomer(_currentCustDetailId);
+}
+
+function deleteCustomer(cid) {
+  const c = data.customers.find(x => x.id === cid);
+  if (!c) return;
+  const debt = getCustomerDebt(cid);
+  const debtCount = data.debts.filter(d => d.customerId === cid).length;
+  const payCount = data.payments.filter(p => p.customerId === cid).length;
+
+  let msg = `"${c.name}" adlı müşteriyi silmek istediğinizden emin misiniz?`;
+  if (debt > 0) msg += `\n\n⚠ Bu müşterinin ${fmt(debt)} tutarında açık borcu var!`;
+  if (debtCount > 0 || payCount > 0) msg += `\n\nUyarı: ${debtCount} veresiye ve ${payCount} ödeme kaydı da silinecek.`;
+
+  if (!confirm(msg)) return;
+
+  // Müşteriyi ve tüm kayıtlarını sil
+  data.customers = data.customers.filter(x => x.id !== cid);
+  data.debts = data.debts.filter(d => d.customerId !== cid);
+  data.payments = data.payments.filter(p => p.customerId !== cid);
+
+  save();
+  renderCustomers();
+  renderDashboard();
+  toast(`${c.name} silindi`, '🗑');
+}
 
 function openDebtFor(cid) {
   openModal('addDebt');
@@ -1922,6 +1956,7 @@ function openPayFor(cid) {
 }
 
 function showCustDetail(cid) {
+  _currentCustDetailId = cid;
   const c = data.customers.find(x => x.id === cid);
   const debts = data.debts.filter(d => d.customerId === cid);
   const payments = data.payments.filter(p => p.customerId === cid);
