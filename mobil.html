@@ -738,8 +738,10 @@ window.dispatchEvent(new Event('firebaseReady'));
         <button class="btn btn-secondary btn-sm" onclick="openModal('backupPanel')" title="Yedekleme Yönetimi" style="border-color:var(--accent3);color:var(--accent3)">🛡 Yedekle</button>
         <div id="syncStatus" style="font-size:11px;font-family:'JetBrains Mono',monospace;padding:5px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;white-space:nowrap">🟡 Bağlanıyor...</div>
         <div id="sessionTimer" title="Oturum süresi" style="font-size:11px;font-family:'JetBrains Mono',monospace;padding:5px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;cursor:pointer;display:none" onclick="extendSession()">⏱ --:--</div>
+        <button id="dashHideBtn" class="btn btn-secondary btn-sm" onclick="toggleDashNumbers()" title="Rakamları Gizle/Göster" style="font-size:14px;padding:6px 10px">👁</button>
         <button class="btn btn-primary btn-sm" onclick="quickAction()">＋ Hızlı Ekle</button>
-        <div class="topbar-user" onclick="openModal('changePass')" title="Şifre değiştir / Çıkış">
+        <button id="dashHideBtn" onclick="toggleDashNumbers()" style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--text2);font-size:16px;padding:5px 8px;cursor:pointer" title="Rakamları Gizle/Göster">👁</button>
+      <div class="topbar-user" onclick="openModal('changePass')" title="Şifre değiştir / Çıkış">
           <span>👤</span><span id="topbarUsername">admin</span>
         </div>
         <button class="btn btn-danger btn-sm" onclick="doLogout()" title="Çıkış yap">⏻ Çıkış</button>
