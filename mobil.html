@@ -2513,7 +2513,7 @@ function checkActiveSession(fbUsers) {
   const stillExists = fbUsers.find(u => u.name === session.username);
   if (!stillExists) {
     // Kullanıcı Firebase'den silindi — oturumu kapat
-    addSecurityLog(session.username, '🚫 HESAP SİLİNDİ', 'Firebase'den kaldırıldı, oturum kapatıldı');
+    addSecurityLog(session.username, '🚫 HESAP SİLİNDİ', 'Firebase tarafindan kaldirildi, oturum kapatildi');
     sessionStorage.removeItem('etrade_session');
     toast('Hesabınız kaldırıldı. Çıkış yapılıyor...', '🚫', true);
     setTimeout(() => { stopSessionTimer(); showLogin(); }, 2000);
