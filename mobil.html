@@ -398,6 +398,8 @@ window.dispatchEvent(new Event('firebaseReady'));
     #tkLines > div { grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
     #tkLinesHeader { display: none !important; }
     #permGrid { grid-template-columns: 1fr !important; }
+    #pfLinesHeader { display: none !important; }
+    #pfLines > div { grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
   }
 
   /* ===== ALT NAVİGASYON ===== */
@@ -606,6 +608,9 @@ window.dispatchEvent(new Event('firebaseReady'));
       </div>
       <div class="nav-item" onclick="navigate('teklif')">
         <span class="icon">📄</span><span>Teklif Hazırla</span>
+      </div>
+      <div class="nav-item" onclick="navigate('proforma')">
+        <span class="icon">🧾</span><span>Proforma Fatura</span>
       </div>
       <div class="nav-item" onclick="navigate('raporlar')">
         <span class="icon">📈</span><span>Raporlar</span>
@@ -872,7 +877,20 @@ window.dispatchEvent(new Event('firebaseReady'));
         </div>
       </div>
 
-      <!-- DÖNEM DEVRİ -->
+      <!-- PROFORMA FATURA -->
+      <div class="page" id="page-proforma">
+        <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center">
+          <button class="btn btn-primary" onclick="openModal('newProforma')">＋ Yeni Proforma Fatura</button>
+          <div style="font-size:12px;color:var(--text2)">Düzenlenen proforma faturaların listesi</div>
+        </div>
+        <div class="table-card">
+          <div class="table-header"><div class="table-title">🧾 Proforma Faturalar</div></div>
+          <table>
+            <thead><tr><th>Fatura No</th><th>Tarih</th><th>Müşteri</th><th>Toplam</th><th>KDV</th><th>Genel Toplam</th><th>Durum</th><th>İşlem</th></tr></thead>
+            <tbody id="proformaTable"></tbody>
+          </table>
+        </div>
+      </div>
       <div class="page" id="page-donemdevri">
         <div class="table-card" style="margin-bottom:20px">
           <div class="table-header"><div class="table-title">🔄 Dönem Devri</div></div>
@@ -986,7 +1004,7 @@ window.dispatchEvent(new Event('firebaseReady'));
   </div><!-- main -->
 </div><!-- app -->
 
-<!-- ALT NAVİGASYON — Sadece Mobil -->
+<!-- ALT NAVİGASYON -->
 <div class="bottom-nav" id="bottomNav">
   <button class="bnav-item active" id="bn-dashboard" ontouchstart="event.preventDefault();bnavGo('dashboard')" onclick="bnavGo('dashboard')">
     <span class="bicon">📊</span><span class="blabel">Ana Sayfa</span>
@@ -1004,10 +1022,12 @@ window.dispatchEvent(new Event('firebaseReady'));
     <span class="bicon">☰</span><span class="blabel">Daha Fazla</span>
   </button>
 </div>
+
 <div class="bnav-more-menu" id="moreMenu">
   <div class="bnav-more-btn" ontouchstart="event.preventDefault();bnavGo('fiyat')" onclick="bnavGo('fiyat')">🏷️ Fiyat Sorgula</div>
   <div class="bnav-more-btn" ontouchstart="event.preventDefault();bnavGo('kasa')" onclick="bnavGo('kasa')">🏦 Günlük Kasa</div>
   <div class="bnav-more-btn" ontouchstart="event.preventDefault();bnavGo('teklif')" onclick="bnavGo('teklif')">📄 Teklif</div>
+  <div class="bnav-more-btn" ontouchstart="event.preventDefault();bnavGo('proforma')" onclick="bnavGo('proforma')">🧾 Proforma Fatura</div>
   <div class="bnav-more-btn" ontouchstart="event.preventDefault();bnavGo('raporlar')" onclick="bnavGo('raporlar')">📈 Raporlar</div>
   <div class="bnav-more-btn" ontouchstart="event.preventDefault();bnavGo('donemdevri')" onclick="bnavGo('donemdevri')">🔄 Dönem Devri</div>
   <div class="bnav-more-btn" ontouchstart="event.preventDefault();bnavGo('kullanicilar')" onclick="bnavGo('kullanicilar')" id="bnav-kullanicilar">👥 Kullanıcılar</div>
@@ -1137,6 +1157,123 @@ window.dispatchEvent(new Event('firebaseReady'));
       <button class="btn btn-secondary" onclick="closeModal('whatsapp')">İptal</button>
       <button class="wa-btn" style="padding:10px 20px;font-size:13px" onclick="openWhatsApp()">💬 WhatsApp'ta Aç</button>
     </div>
+  </div>
+</div>
+
+<!-- PROFORMA FATURA MODAL -->
+<div class="modal-overlay" id="modal-newProforma" style="z-index:1100">
+  <div class="modal" style="width:780px;max-width:97vw;max-height:92vh;overflow-y:auto">
+    <div class="modal-head">
+      <div class="modal-title">🧾 Proforma Fatura Düzenle</div>
+      <button class="modal-close" onclick="closeModal('newProforma')">×</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Firma & Müşteri bilgileri -->
+      <div class="form-row" style="margin-bottom:16px">
+        <div style="background:var(--surface2);border-radius:10px;padding:14px;border:1px solid var(--border)">
+          <div style="font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">🏢 Satıcı Firma</div>
+          <div class="form-group"><label class="form-label">Firma Adı</label><input class="form-input" id="pf-firma-adi" value="Sekmen Elektrik-Elektronik"></div>
+          <div class="form-group"><label class="form-label">Adres</label><input class="form-input" id="pf-firma-adres" value="Balıkesir"></div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Telefon</label><input class="form-input" id="pf-firma-tel" placeholder="0266 xxx xx xx"></div>
+            <div class="form-group"><label class="form-label">Vergi No</label><input class="form-input" id="pf-firma-vkn" placeholder="1234567890"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Vergi Dairesi</label><input class="form-input" id="pf-firma-vd" placeholder="Balıkesir VD"></div>
+          <div class="form-group"><label class="form-label">Banka / IBAN</label><input class="form-input" id="pf-firma-iban" placeholder="TR00 0000 0000 0000 0000 0000 00"></div>
+        </div>
+        <div style="background:var(--surface2);border-radius:10px;padding:14px;border:1px solid var(--border)">
+          <div style="font-size:11px;font-weight:700;color:var(--accent3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">👤 Alıcı Bilgileri</div>
+          <div class="form-group" style="position:relative">
+            <label class="form-label">Müşteri Adı *</label>
+            <input class="form-input" id="pf-cust-name" placeholder="Müşteri adı yazın..." oninput="pfCustSuggest(this.value)" autocomplete="off">
+            <input type="hidden" id="pf-cust-id">
+            <div id="pfCustDrop" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:8px;z-index:200;max-height:180px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.3)"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Telefon</label><input class="form-input" id="pf-cust-tel" placeholder="0532 xxx xx xx"></div>
+          <div class="form-group"><label class="form-label">Adres</label><input class="form-input" id="pf-cust-adres" placeholder="Müşteri adresi"></div>
+          <div class="form-group"><label class="form-label">Vergi No / TC</label><input class="form-input" id="pf-cust-vkn" placeholder="Vergi no veya TC kimlik"></div>
+          <div class="form-group"><label class="form-label">Vergi Dairesi</label><input class="form-input" id="pf-cust-vd" placeholder="Vergi dairesi"></div>
+        </div>
+      </div>
+
+      <!-- Fatura bilgileri -->
+      <div class="form-row" style="margin-bottom:16px">
+        <div class="form-group"><label class="form-label">Fatura No</label><input class="form-input" id="pf-no" placeholder="PF-2026-001" readonly style="background:var(--surface3)"></div>
+        <div class="form-group"><label class="form-label">Düzenleme Tarihi</label><input class="form-input" type="date" id="pf-tarih"></div>
+        <div class="form-group"><label class="form-label">Geçerlilik Tarihi</label><input class="form-input" type="date" id="pf-gecerlilik"></div>
+        <div class="form-group"><label class="form-label">Para Birimi</label>
+          <select class="form-select" id="pf-para">
+            <option value="TL">₺ Türk Lirası</option>
+            <option value="USD">$ Dolar</option>
+            <option value="EUR">€ Euro</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Ürün satırları -->
+      <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.5px">📋 Ürün / Hizmet Kalemleri</div>
+      <div id="pfLinesHeader" style="display:grid;grid-template-columns:2fr 1.5fr 0.8fr 1fr 1fr 32px;gap:8px;margin-bottom:6px;padding:0 2px">
+        <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase">Ürün / Stoktan Seç</div>
+        <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase">Açıklama</div>
+        <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase">Miktar</div>
+        <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase">Birim Fiyat</div>
+        <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase">Tutar</div>
+        <div></div>
+      </div>
+      <div id="pfLines"></div>
+      <button class="btn btn-secondary btn-sm" onclick="addPfLine()" style="margin-top:10px">＋ Satır Ekle</button>
+
+      <!-- KDV ve toplam -->
+      <div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap;align-items:flex-start">
+        <div style="flex:1;min-width:200px">
+          <div class="form-group"><label class="form-label">Not / Açıklama</label>
+            <textarea class="form-input" id="pf-not" rows="3" placeholder="Ödeme koşulları, teslimat bilgisi vb..." style="resize:vertical"></textarea>
+          </div>
+        </div>
+        <div style="width:280px;background:var(--surface2);border-radius:10px;padding:16px;border:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+            <span style="font-size:13px;color:var(--text2)">Ara Toplam</span>
+            <span class="text-mono" id="pf-ara-toplam" style="font-weight:700">₺0,00</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <span style="font-size:13px;color:var(--text2)">KDV</span>
+            <div style="display:flex;gap:8px;align-items:center">
+              <select class="form-select" id="pf-kdv" onchange="updatePfTotal()" style="width:110px;padding:6px 10px;font-size:12px">
+                <option value="0">KDV'siz</option>
+                <option value="20" selected>%20 KDV</option>
+              </select>
+              <span class="text-mono" id="pf-kdv-tutar" style="font-weight:700;color:var(--warn)">₺0,00</span>
+            </div>
+          </div>
+          <div style="border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between">
+            <span style="font-size:15px;font-weight:700">GENEL TOPLAM</span>
+            <span class="text-mono" id="pf-genel-toplam" style="font-size:18px;font-weight:800;color:var(--accent3)">₺0,00</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('newProforma')">İptal</button>
+      <button class="btn btn-secondary" onclick="previewProforma()">👁 Önizle</button>
+      <button class="btn btn-primary" onclick="saveProforma()">💾 Kaydet</button>
+      <button class="btn btn-success" onclick="printProforma()">🖨 PDF / Yazdır</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROFORMA GÖRÜNTÜLEME MODAL -->
+<div class="modal-overlay" id="modal-viewProforma" style="z-index:1200">
+  <div class="modal" style="width:820px;max-width:97vw;max-height:95vh;overflow-y:auto">
+    <div class="modal-head">
+      <div class="modal-title">🧾 Proforma Fatura</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary btn-sm" onclick="printProformaById()">🖨 Yazdır / PDF</button>
+        <button class="modal-close" onclick="closeModal('viewProforma')">×</button>
+      </div>
+    </div>
+    <div id="proformaPreviewContent" style="padding:20px"></div>
   </div>
 </div>
 
@@ -1600,6 +1737,7 @@ let data = {
   payments: [],
   transactions: [],
   teklifler: [],
+  proformalar: [],
   archives: []
 };
 
@@ -1728,6 +1866,7 @@ const pageNames = {
   tahsilat: ['Tahsilat','ÖDEMELER'],
   kasa: ['Günlük Kasa','KASA'],
   teklif: ['Teklif Yönetimi','TEKLİFLER'],
+  proforma: ['Proforma Fatura','PROFORMA'],
   raporlar: ['Raporlar','ANALİZ'],
   donemdevri: ['Dönem Devri','ARŞİV'],
   kullanicilar: ['Kullanıcı Yönetimi','KULLANICILAR']
@@ -1757,6 +1896,7 @@ function renderPage(page) {
   else if (page === 'tahsilat') renderCollections();
   else if (page === 'kasa') renderKasa();
   else if (page === 'teklif') renderTeklifList();
+  else if (page === 'proforma') renderProformaList();
   else if (page === 'raporlar') renderReports();
   else if (page === 'donemdevri') renderArchiveTable();
   else if (page === 'kullanicilar') renderUsers();
@@ -1778,6 +1918,7 @@ function openModal(name) {
   if (name === 'collectPayment') fillPayModal();
   if (name === 'bulkZam') openModal_bulkZam();
   if (name === 'newTeklif') initTeklifModal();
+  if (name === 'newProforma') initProformaModal();
   if (name === 'backupPanel') refreshBackupPanel();
   document.getElementById('modal-' + name).classList.add('active');
 }
@@ -2978,6 +3119,8 @@ function applyRoleUI(role, perms) {
     });
     const twoCol = document.querySelector('#page-dashboard .two-col');
     if (twoCol) twoCol.style.display = '';
+    const bnavKul = document.getElementById('bnav-kullanicilar');
+    if (bnavKul) bnavKul.style.display = '';
     const el2 = document.getElementById('topbarUsername');
     if (el2) el2.textContent = session.username || 'admin';
     return; // Admin için başka kısıtlama yok
@@ -3040,6 +3183,15 @@ function applyRoleUI(role, perms) {
     if (!userPerms.includes(perm)) {
       document.querySelectorAll(sel).forEach(el => el.style.display='none');
     }
+  });
+
+  // Mobil alt nav yetki kontrolü
+  const bnavKulEl = document.getElementById('bnav-kullanicilar');
+  if (bnavKulEl) bnavKulEl.style.display = userPerms.includes('page-kullanicilar') ? '' : 'none';
+  const bnavMap = { veresiye:'page-veresiye', stok:'page-stok', tahsilat:'page-tahsilat' };
+  Object.entries(bnavMap).forEach(([id, perm]) => {
+    const btn = document.getElementById('bn-' + id);
+    if (btn) btn.style.display = userPerms.includes(perm) ? '' : 'none';
   });
 
   // Topbar kullanıcı adı
@@ -3781,6 +3933,287 @@ function viewArchive(id) {
   openModal('viewArchive');
 }
 
+// ============ PROFORMA FATURA SİSTEMİ ============
+let pfLineCount = 0;
+let _currentProformaId = null;
+
+function getNextProformaNo() {
+  const year = new Date().getFullYear();
+  const count = (data.proformalar || []).length + 1;
+  return `PF-${year}-${String(count).padStart(3,'0')}`;
+}
+
+function initProformaModal() {
+  _currentProformaId = null;
+  document.getElementById('pf-no').value = getNextProformaNo();
+  document.getElementById('pf-tarih').value = today();
+  const gecerlilik = new Date(); gecerlilik.setDate(gecerlilik.getDate() + 30);
+  document.getElementById('pf-gecerlilik').value = gecerlilik.toISOString().split('T')[0];
+  document.getElementById('pf-cust-name').value = '';
+  document.getElementById('pf-cust-id').value = '';
+  document.getElementById('pf-cust-tel').value = '';
+  document.getElementById('pf-cust-adres').value = '';
+  document.getElementById('pf-cust-vkn').value = '';
+  document.getElementById('pf-cust-vd').value = '';
+  document.getElementById('pf-not').value = '';
+  document.getElementById('pf-kdv').value = '20';
+  document.getElementById('pf-para').value = 'TL';
+  document.getElementById('pf-firma-adi').value = COMPANY_INFO.name || 'Sekmen Elektrik-Elektronik';
+  document.getElementById('pf-firma-adres').value = COMPANY_INFO.address || '';
+  document.getElementById('pf-firma-tel').value = COMPANY_INFO.phone || '';
+  pfLineCount = 0;
+  document.getElementById('pfLines').innerHTML = '';
+  addPfLine();
+  updatePfTotal();
+}
+
+function pfCustSuggest(val) {
+  const drop = document.getElementById('pfCustDrop');
+  if (!val || val.length < 1) { drop.style.display = 'none'; return; }
+  const matches = data.customers.filter(c => c.name.toLowerCase().includes(val.toLowerCase())).slice(0,6);
+  if (!matches.length) { drop.style.display = 'none'; return; }
+  drop.innerHTML = matches.map(c => `<div onclick="pfSelectCust('${c.id}')" style="padding:9px 14px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border)" onmouseover="this.style.background='var(--surface3)'" onmouseout="this.style.background=''"><b>${c.name}</b>${c.phone?`<span style="color:var(--text3);font-size:11px;margin-left:8px">${c.phone}</span>`:''}</div>`).join('');
+  drop.style.display = 'block';
+}
+
+function pfSelectCust(cid) {
+  const c = data.customers.find(x=>x.id===cid);
+  if (!c) return;
+  document.getElementById('pf-cust-name').value = c.name;
+  document.getElementById('pf-cust-id').value = c.id;
+  document.getElementById('pf-cust-tel').value = c.phone || '';
+  document.getElementById('pf-cust-adres').value = c.address || '';
+  document.getElementById('pfCustDrop').style.display = 'none';
+}
+
+function addPfLine(prodId='', qty=1, price='', desc='') {
+  pfLineCount++;
+  const idx = pfLineCount;
+  const row = document.createElement('div');
+  row.id = `pfLine-${idx}`;
+  row.style.cssText = 'display:grid;grid-template-columns:2fr 1.5fr 0.8fr 1fr 1fr 32px;gap:8px;margin-bottom:8px;align-items:center';
+  const prodOpts = data.products.map(p=>`<option value="${p.id}" data-price="${p.sellPrice}">${p.name} (${p.code})</option>`).join('');
+  row.innerHTML = `
+    <select class="form-select" id="pfp-${idx}" onchange="pfProdChange(${idx})" style="font-size:12px;padding:8px 10px"><option value="">-- Serbest --</option>${prodOpts}</select>
+    <input class="form-input" id="pfd-${idx}" placeholder="Açıklama" style="font-size:12px;padding:8px 10px" value="${desc}">
+    <input class="form-input" id="pfq-${idx}" type="number" value="${qty}" min="0.01" step="0.01" oninput="updatePfLineTotal(${idx});updatePfTotal()" style="font-size:12px;padding:8px 10px">
+    <input class="form-input" id="pfpr-${idx}" type="number" value="${price}" placeholder="0.00" step="0.01" oninput="updatePfLineTotal(${idx});updatePfTotal()" style="font-size:12px;padding:8px 10px">
+    <input class="form-input" id="pflt-${idx}" readonly value="0,00" style="font-size:12px;padding:8px 10px;background:var(--surface3);font-weight:700;color:var(--accent3)">
+    <button onclick="removePfLine(${idx})" style="background:var(--danger);border:none;border-radius:6px;color:#fff;width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">×</button>`;
+  document.getElementById('pfLines').appendChild(row);
+  if (prodId) { document.getElementById(`pfp-${idx}`).value = prodId; pfProdChange(idx); }
+  if (price) updatePfLineTotal(idx);
+}
+
+function pfProdChange(idx) {
+  const sel = document.getElementById(`pfp-${idx}`);
+  const opt = sel.options[sel.selectedIndex];
+  const price = opt?.dataset?.price || '';
+  if (price) document.getElementById(`pfpr-${idx}`).value = price;
+  const pid = sel.value;
+  if (pid) { const p = data.products.find(x=>x.id===pid); if (p) document.getElementById(`pfd-${idx}`).value = p.name; }
+  updatePfLineTotal(idx); updatePfTotal();
+}
+
+function updatePfLineTotal(idx) {
+  const qty = parseFloat(document.getElementById(`pfq-${idx}`)?.value) || 0;
+  const pr  = parseFloat(document.getElementById(`pfpr-${idx}`)?.value) || 0;
+  const el = document.getElementById(`pflt-${idx}`);
+  if (el) el.value = (qty*pr).toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function removePfLine(idx) {
+  document.getElementById(`pfLine-${idx}`)?.remove();
+  updatePfTotal();
+}
+
+function updatePfTotal() {
+  let ara = 0;
+  for (let i=1; i<=pfLineCount; i++) {
+    const q = parseFloat(document.getElementById(`pfq-${i}`)?.value) || 0;
+    const p = parseFloat(document.getElementById(`pfpr-${i}`)?.value) || 0;
+    ara += q * p;
+  }
+  const kdvRate = parseInt(document.getElementById('pf-kdv')?.value || '0');
+  const kdvTutar = ara * kdvRate / 100;
+  const genel = ara + kdvTutar;
+  const cur = getCurSymbol();
+  document.getElementById('pf-ara-toplam').textContent = cur + fmtN(ara);
+  document.getElementById('pf-kdv-tutar').textContent = cur + fmtN(kdvTutar);
+  document.getElementById('pf-genel-toplam').textContent = cur + fmtN(genel);
+}
+
+function getCurSymbol() {
+  const v = document.getElementById('pf-para')?.value || 'TL';
+  return v === 'TL' ? '₺' : v === 'USD' ? '$' : '€';
+}
+
+function fmtN(n) { return n.toLocaleString('tr-TR', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+
+function getPfLines() {
+  const lines = [];
+  for (let i=1; i<=pfLineCount; i++) {
+    const q = parseFloat(document.getElementById(`pfq-${i}`)?.value) || 0;
+    const p = parseFloat(document.getElementById(`pfpr-${i}`)?.value) || 0;
+    const desc = document.getElementById(`pfd-${i}`)?.value || '';
+    const prodId = document.getElementById(`pfp-${i}`)?.value || '';
+    if (q > 0 && p > 0) {
+      const prodName = prodId ? (data.products.find(x=>x.id===prodId)?.name || desc) : desc;
+      lines.push({ prodId, desc: prodName || desc, qty: q, price: p, total: q*p });
+    }
+  }
+  return lines;
+}
+
+function saveProforma() {
+  const custName = document.getElementById('pf-cust-name').value.trim();
+  if (!custName) { toast('Müşteri adı zorunlu!','⚠',true); return; }
+  const lines = getPfLines();
+  if (!lines.length) { toast('En az bir ürün satırı ekleyin!','⚠',true); return; }
+  const kdvRate = parseInt(document.getElementById('pf-kdv').value || '0');
+  const ara = lines.reduce((s,l)=>s+l.total, 0);
+  const kdvTutar = ara * kdvRate / 100;
+  const pf = {
+    id: _currentProformaId || uid(),
+    no: document.getElementById('pf-no').value,
+    tarih: document.getElementById('pf-tarih').value,
+    gecerlilik: document.getElementById('pf-gecerlilik').value,
+    para: document.getElementById('pf-para').value,
+    kdvRate, ara, kdvTutar, genel: ara + kdvTutar,
+    firma: { adi: document.getElementById('pf-firma-adi').value, adres: document.getElementById('pf-firma-adres').value, tel: document.getElementById('pf-firma-tel').value, vkn: document.getElementById('pf-firma-vkn').value, vd: document.getElementById('pf-firma-vd').value, iban: document.getElementById('pf-firma-iban').value },
+    musteri: { adi: custName, id: document.getElementById('pf-cust-id').value, tel: document.getElementById('pf-cust-tel').value, adres: document.getElementById('pf-cust-adres').value, vkn: document.getElementById('pf-cust-vkn').value, vd: document.getElementById('pf-cust-vd').value },
+    lines, not: document.getElementById('pf-not').value, durum: 'Taslak', createdAt: today()
+  };
+  if (!data.proformalar) data.proformalar = [];
+  const idx = data.proformalar.findIndex(x=>x.id===pf.id);
+  if (idx >= 0) data.proformalar[idx] = pf; else data.proformalar.push(pf);
+  save(); closeModal('newProforma'); renderProformaList();
+  toast(`Proforma ${pf.no} kaydedildi!`,'🧾');
+}
+
+function renderProformaList() {
+  const tbody = document.getElementById('proformaTable');
+  if (!tbody) return;
+  if (!data.proformalar) data.proformalar = [];
+  if (!data.proformalar.length) { tbody.innerHTML = `<tr><td colspan="8" class="empty-state"><div class="icon">🧾</div><p>Henüz proforma fatura yok.</p></td></tr>`; return; }
+  const cur = { TL:'₺', USD:'$', EUR:'€' };
+  tbody.innerHTML = [...data.proformalar].reverse().map(pf => {
+    const c = cur[pf.para] || '₺';
+    const sc = pf.durum === 'Onaylandı' ? 'var(--accent3)' : pf.durum === 'İptal' ? 'var(--danger)' : 'var(--warn)';
+    return `<tr>
+      <td class="text-mono" style="font-size:12px;color:var(--accent)">${pf.no}</td>
+      <td>${fmtDate(pf.tarih)}</td><td><b>${pf.musteri?.adi||'-'}</b></td>
+      <td class="amount">${c}${fmtN(pf.ara)}</td>
+      <td class="amount" style="color:var(--warn)">${pf.kdvRate > 0 ? '%'+pf.kdvRate+' — '+c+fmtN(pf.kdvTutar) : "KDV'siz"}</td>
+      <td class="amount amount-positive" style="font-weight:800">${c}${fmtN(pf.genel)}</td>
+      <td><span class="badge" style="color:${sc};border-color:${sc};background:transparent">${pf.durum}</span></td>
+      <td style="display:flex;gap:5px;flex-wrap:wrap">
+        <button class="btn btn-secondary btn-sm" onclick="viewProforma('${pf.id}')">👁</button>
+        <button class="btn btn-secondary btn-sm" onclick="editProforma('${pf.id}')">✏</button>
+        <button class="btn btn-success btn-sm" onclick="printProformaById('${pf.id}')">🖨</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteProforma('${pf.id}')">🗑</button>
+      </td></tr>`;
+  }).join('');
+}
+
+function deleteProforma(id) {
+  if (!confirm('Bu proforma fatura silinsin mi?')) return;
+  data.proformalar = data.proformalar.filter(x=>x.id!==id);
+  save(); renderProformaList(); toast('Proforma silindi','🗑');
+}
+
+function editProforma(id) {
+  const pf = data.proformalar.find(x=>x.id===id);
+  if (!pf) return;
+  _currentProformaId = id;
+  openModal('newProforma');
+  setTimeout(() => {
+    document.getElementById('pf-no').value = pf.no;
+    document.getElementById('pf-tarih').value = pf.tarih;
+    document.getElementById('pf-gecerlilik').value = pf.gecerlilik;
+    document.getElementById('pf-para').value = pf.para || 'TL';
+    document.getElementById('pf-kdv').value = String(pf.kdvRate||0);
+    document.getElementById('pf-not').value = pf.not || '';
+    document.getElementById('pf-cust-name').value = pf.musteri?.adi || '';
+    document.getElementById('pf-cust-id').value = pf.musteri?.id || '';
+    document.getElementById('pf-cust-tel').value = pf.musteri?.tel || '';
+    document.getElementById('pf-cust-adres').value = pf.musteri?.adres || '';
+    document.getElementById('pf-cust-vkn').value = pf.musteri?.vkn || '';
+    document.getElementById('pf-cust-vd').value = pf.musteri?.vd || '';
+    document.getElementById('pf-firma-adi').value = pf.firma?.adi || '';
+    document.getElementById('pf-firma-adres').value = pf.firma?.adres || '';
+    document.getElementById('pf-firma-tel').value = pf.firma?.tel || '';
+    document.getElementById('pf-firma-vkn').value = pf.firma?.vkn || '';
+    document.getElementById('pf-firma-vd').value = pf.firma?.vd || '';
+    document.getElementById('pf-firma-iban').value = pf.firma?.iban || '';
+    pfLineCount = 0; document.getElementById('pfLines').innerHTML = '';
+    (pf.lines||[]).forEach(l => addPfLine(l.prodId, l.qty, l.price, l.desc));
+    updatePfTotal();
+  }, 100);
+}
+
+function viewProforma(id) {
+  const pf = data.proformalar.find(x=>x.id===id);
+  if (!pf) return;
+  document.getElementById('proformaPreviewContent').innerHTML = buildProformaHTML(pf);
+  openModal('viewProforma');
+}
+
+function printProforma() {
+  saveProforma();
+  const pf = data.proformalar[data.proformalar.length - 1];
+  if (pf) printProformaById(pf.id);
+}
+
+function printProformaById(id) {
+  if (!id) return;
+  const pf = data.proformalar.find(x=>x.id===id);
+  if (!pf) return;
+  const html = buildProformaHTML(pf);
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Proforma ${pf.no}</title>
+  <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;font-size:13px;color:#1a1a2e;background:#fff;padding:30px}@media print{body{padding:0}@page{margin:15mm}}.pf-header{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:16px;border-bottom:3px solid #1a3a6b;margin-bottom:20px}.pf-title{font-size:22px;font-weight:900;color:#1a3a6b;letter-spacing:1px}.pf-subtitle{font-size:12px;color:#888;margin-top:4px}.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}.info-box{background:#f8f9fc;border-radius:8px;padding:14px;border:1px solid #e0e4f0}.info-box h4{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:8px}.info-box p{font-size:13px;line-height:1.7;color:#333}table{width:100%;border-collapse:collapse;margin-bottom:20px}thead th{background:#1a3a6b;color:#fff;padding:10px 12px;font-size:12px;text-align:left}tbody tr:nth-child(even){background:#f8f9fc}tbody td{padding:9px 12px;border-bottom:1px solid #eee;font-size:13px}.tr{text-align:right}.totals{display:flex;justify-content:flex-end;margin-bottom:20px}.tb{width:300px}.trow{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;font-size:13px}.trow.grand{font-size:16px;font-weight:900;color:#1a3a6b;border-top:2px solid #1a3a6b;border-bottom:none;padding-top:10px}.not-box{background:#f8f9fc;border-radius:8px;padding:14px;border:1px solid #e0e4f0;margin-bottom:20px;font-size:12px;color:#555;line-height:1.6}.footer{display:flex;justify-content:space-between;margin-top:40px;padding-top:16px;border-top:1px solid #ddd}.sign-box{width:200px;text-align:center}.sign-line{border-top:1px solid #333;margin-top:60px;padding-top:6px;font-size:11px;color:#666}.wm{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-30deg);font-size:80px;font-weight:900;color:rgba(26,58,107,0.04);z-index:-1;pointer-events:none;white-space:nowrap}</style></head><body>
+  <div class="wm">PROFORMA</div>${html}<script>window.onload=()=>window.print()<\/script></body></html>`);
+  win.document.close();
+}
+
+function buildProformaHTML(pf) {
+  const cur = { TL:'₺', USD:'$', EUR:'€' }[pf.para] || '₺';
+  const kdvLabel = pf.kdvRate > 0 ? '%'+pf.kdvRate+' KDV' : "KDV'siz";
+  return `
+  <div class="pf-header">
+    <div><div class="pf-title">PROFORMA FATURA</div><div class="pf-subtitle">Bu belge proforma faturadır, resmi fatura niteliği taşımaz.</div></div>
+    <div style="text-align:right"><div style="font-size:16px;font-weight:800;color:#1a3a6b">No: ${pf.no}</div><div style="font-size:12px;color:#666;margin-top:4px">Tarih: ${fmtDate(pf.tarih)}</div><div style="font-size:12px;color:#666">Geçerlilik: ${fmtDate(pf.gecerlilik)}</div><div style="font-size:12px;color:#666">Para: ${pf.para}</div></div>
+  </div>
+  <div class="info-grid">
+    <div class="info-box"><h4>Satıcı Firma</h4><p><strong>${pf.firma?.adi||'-'}</strong></p>${pf.firma?.adres?`<p>${pf.firma.adres}</p>`:''} ${pf.firma?.tel?`<p>Tel: ${pf.firma.tel}</p>`:''} ${pf.firma?.vkn?`<p>Vergi No: ${pf.firma.vkn}</p>`:''} ${pf.firma?.vd?`<p>Vergi Dairesi: ${pf.firma.vd}</p>`:''} ${pf.firma?.iban?`<p>IBAN: ${pf.firma.iban}</p>`:''}</div>
+    <div class="info-box"><h4>Alıcı</h4><p><strong>${pf.musteri?.adi||'-'}</strong></p>${pf.musteri?.adres?`<p>${pf.musteri.adres}</p>`:''} ${pf.musteri?.tel?`<p>Tel: ${pf.musteri.tel}</p>`:''} ${pf.musteri?.vkn?`<p>Vergi/TC: ${pf.musteri.vkn}</p>`:''} ${pf.musteri?.vd?`<p>Vergi Dairesi: ${pf.musteri.vd}</p>`:''}</div>
+  </div>
+  <table><thead><tr><th style="width:35px">#</th><th>Ürün / Hizmet</th><th class="tr" style="width:70px">Miktar</th><th class="tr" style="width:120px">Birim Fiyat</th><th class="tr" style="width:120px">Tutar</th></tr></thead>
+  <tbody>${(pf.lines||[]).map((l,i)=>`<tr><td>${i+1}</td><td>${l.desc||'-'}</td><td class="tr">${l.qty}</td><td class="tr">${cur}${fmtN(l.price)}</td><td class="tr"><strong>${cur}${fmtN(l.total)}</strong></td></tr>`).join('')}</tbody></table>
+  <div class="totals"><div class="tb"><div class="trow"><span>Ara Toplam</span><span>${cur}${fmtN(pf.ara)}</span></div><div class="trow"><span>${kdvLabel}</span><span>${cur}${fmtN(pf.kdvTutar)}</span></div><div class="trow grand"><span>GENEL TOPLAM</span><span>${cur}${fmtN(pf.genel)}</span></div></div></div>
+  ${pf.not?`<div class="not-box"><strong>Not:</strong> ${pf.not}</div>`:''}
+  <div class="footer"><div class="sign-box"><div class="sign-line">Düzenleyen İmza / Kaşe</div></div><div style="font-size:11px;color:#999;align-self:flex-end">Düzenlenme: ${new Date().toLocaleDateString('tr-TR')}</div><div class="sign-box"><div class="sign-line">Alıcı İmza / Kaşe</div></div></div>`;
+}
+
+function previewProforma() {
+  const lines = getPfLines();
+  if (!lines.length) { toast('Önce satır ekleyin!','⚠',true); return; }
+  const kdvRate = parseInt(document.getElementById('pf-kdv').value||'0');
+  const ara = lines.reduce((s,l)=>s+l.total,0);
+  const kdvTutar = ara * kdvRate / 100;
+  const tempPf = {
+    id:'preview', no: document.getElementById('pf-no').value, tarih: document.getElementById('pf-tarih').value,
+    gecerlilik: document.getElementById('pf-gecerlilik').value, para: document.getElementById('pf-para').value,
+    kdvRate, ara, kdvTutar, genel: ara+kdvTutar,
+    firma:{ adi: document.getElementById('pf-firma-adi').value, adres: document.getElementById('pf-firma-adres').value, tel: document.getElementById('pf-firma-tel').value, vkn: document.getElementById('pf-firma-vkn').value, vd: document.getElementById('pf-firma-vd').value, iban: document.getElementById('pf-firma-iban').value },
+    musteri:{ adi: document.getElementById('pf-cust-name').value, tel: document.getElementById('pf-cust-tel').value, adres: document.getElementById('pf-cust-adres').value, vkn: document.getElementById('pf-cust-vkn').value, vd: document.getElementById('pf-cust-vd').value },
+    lines, not: document.getElementById('pf-not').value, durum:'Önizleme'
+  };
+  document.getElementById('proformaPreviewContent').innerHTML = buildProformaHTML(tempPf);
+  openModal('viewProforma');
+}
+
 // ============ MOBİL ALT NAV ============
 function bnavGo(page) {
   closeMoreMenu();
@@ -4109,6 +4542,7 @@ function applyRestoredData(parsed) {
   data.payments     = parsed.payments     || [];
   data.transactions = parsed.transactions || [];
   data.teklifler    = parsed.teklifler    || [];
+  data.proformalar  = parsed.proformalar  || [];
   data.archives     = parsed.archives     || [];
   save();
   renderDashboard();
