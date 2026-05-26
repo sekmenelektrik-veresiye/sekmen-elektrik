@@ -3101,10 +3101,30 @@ function showLogin() {
   setTimeout(() => document.getElementById('loginUser').focus(), 100);
 }
 
+
+// Arka plana geçince oturumu koru
+let _bgTime = null;
+document.addEventListener('visibilitychange', () => {
+  const session = JSON.parse(sessionStorage.getItem('etrade_session') || '{}');
+  if (!session.username) return;
+  if (document.hidden) {
+    // Arka plana geçti — zamanı kaydet
+    _bgTime = Date.now();
+  } else {
+    // Geri geldi — geçen süreyi oturum süresine ekle
+    if (_bgTime) {
+      const elapsed = Date.now() - _bgTime;
+      session.time = (session.time || Date.now()) + elapsed;
+      sessionStorage.setItem('etrade_session', JSON.stringify(session));
+      _bgTime = null;
+    }
+  }
+});
+
 // ============ GÜVENLİK SİSTEMİ ============
 const MAX_ATTEMPTS = 3;
 const LOCKOUT_TIME = 5 * 60;
-const SESSION_MINUTES = 30;
+const SESSION_MINUTES = 60; // 1 saat
 const SESSION_WARN_MINS = 5;
 
 function getLockout() { try { return JSON.parse(localStorage.getItem('etrade_lockout')||'{}'); } catch(e){ return {}; } }
