@@ -2021,6 +2021,33 @@ function openModal(name) {
 }
 function closeModal(name) { document.getElementById('modal-' + name).classList.remove('active'); }
 
+// Mobil modal footer padding düzeltmesi
+function fixMobileModalFooters() {
+  if (window.innerWidth > 768) return;
+  // Android sistem nav bar yüksekliğini hesapla
+  const navBarH = window.innerHeight - document.documentElement.clientHeight;
+  const extraPad = Math.max(navBarH, 20) + 'px';
+  document.querySelectorAll('.modal-footer').forEach(el => {
+    el.style.paddingBottom = extraPad;
+    el.style.position = 'sticky';
+    el.style.bottom = '0';
+    el.style.background = 'var(--surface)';
+    el.style.zIndex = '10';
+  });
+  // Modal max-height düzelt
+  const safeH = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  document.querySelectorAll('.modal').forEach(el => {
+    el.style.maxHeight = (safeH * 0.88) + 'px';
+  });
+}
+
+// Modal açıldığında düzelt
+const _origOpenModal2 = openModal;
+window.openModal = function(name) {
+  _origOpenModal2(name);
+  setTimeout(fixMobileModalFooters, 50);
+};
+
 function quickAction() {
   const active = document.querySelector('.page.active').id.replace('page-','');
   if (active === 'veresiye' || active === 'dashboard') openModal('addCustomer');
@@ -4805,6 +4832,9 @@ if (window.innerWidth <= 768) {
   const sidebar = document.querySelector('.sidebar');
   if (sidebar) sidebar.style.cssText = 'display:none!important;width:0!important;overflow:hidden!important;';
   document.body.style.overflowX = 'hidden';
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', fixMobileModalFooters);
+  }
 }
 
 // Kasa tarihini bugüne ayarla
