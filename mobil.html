@@ -231,9 +231,8 @@ window.dispatchEvent(new Event('firebaseReady'));
   .modal {
     background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
     width: 520px; max-width: 90vw; max-height: 90vh; overflow-y: auto;
-    transform: translateY(20px); transition: transform 0.2s; pointer-events: all;
   }
-  .modal-overlay.active .modal { transform: translateY(0); }
+  .modal-overlay.active .modal { }
   .modal-head {
     padding: 20px 24px; border-bottom: 1px solid var(--border);
     display: flex; align-items: center; justify-content: space-between;
@@ -473,10 +472,10 @@ window.dispatchEvent(new Event('firebaseReady'));
     .kasa-summary { grid-template-columns: 1fr !important; }
     .full-col { margin-top: 10px !important; }
     .modal-overlay { align-items: center !important; padding: 16px !important; }
-    .modal { width: 100% !important; max-width: 100% !important; max-height: 85vh !important; border-radius: 12px !important; margin: 0 !important; position: relative !important; bottom: auto !important; left: auto !important; right: auto !important; overflow-y: auto !important; display: flex !important; flex-direction: column !important; }
-    .modal-head { flex-shrink: 0 !important; }
-    .modal-body { flex: 1 !important; overflow-y: auto !important; }
-    .modal-footer { flex-shrink: 0 !important; position: relative !important; bottom: auto !important; z-index: auto !important; padding: 16px !important; background: var(--surface) !important; border-top: 1px solid var(--border) !important; }
+    .modal { width: 100% !important; max-width: 100% !important; max-height: 85vh !important; border-radius: 12px !important; margin: 0 !important; position: relative !important; bottom: auto !important; left: auto !important; right: auto !important; overflow-y: visible !important; display: flex !important; flex-direction: column !important; }
+    .modal-head { flex-shrink: 0 !important; position: relative !important; z-index: 2 !important; }
+    .modal-body { flex: 1 !important; overflow-y: auto !important; -webkit-overflow-scrolling: touch !important; max-height: calc(85vh - 120px) !important; }
+    .modal-footer { flex-shrink: 0 !important; position: relative !important; z-index: 2 !important; padding: 16px !important; background: var(--surface) !important; border-top: 1px solid var(--border) !important; margin-top: 0 !important; transform: none !important; }
     .modal-overlay { align-items: flex-end !important; }
     .form-row { grid-template-columns: 1fr !important; gap: 10px !important; }
     .form-input, .form-select { padding: 12px 14px !important; font-size: 14px !important; }
