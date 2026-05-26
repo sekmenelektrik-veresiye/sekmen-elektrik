@@ -338,6 +338,66 @@ window.dispatchEvent(new Event('firebaseReady'));
     .two-col { grid-template-columns: 1fr; }
   }
 
+  /* SÜPER ADMİN PANELİ */
+  .sa-overlay {
+    position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:9999;
+    display:none;align-items:center;justify-content:center;
+  }
+  .sa-overlay.active { display:flex; }
+  .sa-panel {
+    width:900px;max-width:97vw;max-height:95vh;overflow-y:auto;
+    background:#0d1117;border:1px solid #30363d;border-radius:16px;
+    box-shadow:0 0 60px rgba(0,212,255,0.15);
+  }
+  .sa-head {
+    padding:20px 24px;border-bottom:1px solid #30363d;
+    display:flex;align-items:center;justify-content:space-between;
+    background:linear-gradient(135deg,#0a0e1a,#111827);
+    border-radius:16px 16px 0 0;position:sticky;top:0;z-index:10;
+  }
+  .sa-title { font-size:18px;font-weight:800;color:#00d4ff;display:flex;align-items:center;gap:10px; }
+  .sa-badge { font-size:10px;background:rgba(255,107,53,0.2);color:#ff6b35;border:1px solid rgba(255,107,53,0.4);border-radius:20px;padding:3px 10px;font-family:'Roboto Mono',monospace; }
+  .sa-tabs { display:flex;gap:0;border-bottom:1px solid #30363d;padding:0 24px;background:#0d1117; }
+  .sa-tab { padding:12px 20px;font-size:13px;font-weight:600;color:#8b949e;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;white-space:nowrap; }
+  .sa-tab.active { color:#00d4ff;border-bottom-color:#00d4ff; }
+  .sa-tab:hover { color:#e6edf3; }
+  .sa-body { padding:24px; }
+  .sa-section { display:none; }
+  .sa-section.active { display:block; }
+  .sa-grid { display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px; }
+  .sa-card { background:#161b22;border:1px solid #30363d;border-radius:10px;padding:16px; }
+  .sa-card-title { font-size:11px;font-weight:700;color:#8b949e;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px; }
+  .sa-label { font-size:12px;color:#8b949e;margin-bottom:5px;display:block; }
+  .sa-input { width:100%;background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:9px 12px;color:#e6edf3;font-size:13px;outline:none;margin-bottom:10px;font-family:'Roboto',sans-serif; }
+  .sa-input:focus { border-color:#00d4ff; }
+  .sa-select { width:100%;background:#0d1117;border:1px solid #30363d;border-radius:6px;padding:9px 12px;color:#e6edf3;font-size:13px;outline:none;margin-bottom:10px;cursor:pointer; }
+  .sa-btn { padding:9px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:'Roboto',sans-serif;transition:all 0.2s; }
+  .sa-btn-primary { background:#00d4ff;color:#0a0e1a; }
+  .sa-btn-primary:hover { background:#33daff; }
+  .sa-btn-danger { background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3); }
+  .sa-btn-danger:hover { background:rgba(239,68,68,0.25); }
+  .sa-btn-secondary { background:#161b22;color:#e6edf3;border:1px solid #30363d; }
+  .sa-btn-secondary:hover { border-color:#00d4ff; }
+  .color-picker-row { display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px; }
+  .color-swatch { width:32px;height:32px;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:all 0.15s; }
+  .color-swatch.selected { border-color:#fff;transform:scale(1.15); }
+  .module-toggle-row { display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #21262d; }
+  .module-toggle-row:last-child { border-bottom:none; }
+  .sa-toggle { width:40px;height:22px;background:#30363d;border-radius:11px;cursor:pointer;position:relative;transition:background 0.2s;border:none;flex-shrink:0; }
+  .sa-toggle.on { background:#00d4ff; }
+  .sa-toggle::after { content:'';width:18px;height:18px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:left 0.2s; }
+  .sa-toggle.on::after { left:20px; }
+  .template-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px; }
+  .template-card { background:#161b22;border:1px solid #30363d;border-radius:10px;padding:14px;cursor:pointer;text-align:center;transition:all 0.2s; }
+  .template-card:hover { border-color:#00d4ff;background:#0d1117; }
+  .template-card.selected { border-color:#00d4ff;background:rgba(0,212,255,0.08); }
+  .template-icon { font-size:28px;margin-bottom:8px; }
+  .template-name { font-size:12px;font-weight:700;color:#e6edf3; }
+  .template-desc { font-size:10px;color:#8b949e;margin-top:4px; }
+  .logo-upload-area { border:2px dashed #30363d;border-radius:10px;padding:24px;text-align:center;cursor:pointer;transition:all 0.2s;margin-bottom:12px; }
+  .logo-upload-area:hover { border-color:#00d4ff; }
+  .logo-preview { max-height:80px;max-width:200px;object-fit:contain;border-radius:6px; }
+
   /* YENİ ÖZELLİKLER */
   .doviz-chip {
     display:inline-flex; align-items:center; gap:5px;
@@ -4182,6 +4242,371 @@ function previewProforma() {
   openModal('viewProforma');
 }
 
+// ============ SÜPER ADMİN SİSTEMİ ============
+const SA_DEFAULT_URL_KEY = 'sekmen2026sa';
+const SA_DEFAULT_USER = 'superadmin';
+const SA_DEFAULT_PASS = 'sekmen@super2026';
+
+function getSaConfig() {
+  try { return JSON.parse(localStorage.getItem('sa_config') || '{}'); } catch(e) { return {}; }
+}
+function saveSaConfig(cfg) { localStorage.setItem('sa_config', JSON.stringify(cfg)); }
+
+// URL parametresi kontrolü
+function checkSaUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const cfg = getSaConfig();
+  const key = cfg.urlKey || SA_DEFAULT_URL_KEY;
+  if (params.get('sa') === key) {
+    openSuperAdmin();
+    // URL'yi temizle (güvenlik için)
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+}
+
+// Klavye kısayolu: Ctrl + Shift + F12
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey && e.shiftKey && e.key === 'F12') {
+    e.preventDefault();
+    openSuperAdmin();
+  }
+});
+
+function openSuperAdmin() {
+  // Süper admin kullanıcısı olup olmadığını kontrol et
+  const session = JSON.parse(sessionStorage.getItem('etrade_session') || '{}');
+  const cfg = getSaConfig();
+
+  // Giriş yapılmamışsa veya süper admin değilse şifre sor
+  const superUser = cfg.superUser || SA_DEFAULT_USER;
+  const superPass = cfg.superPass || SA_DEFAULT_PASS;
+
+  if (session.username !== superUser) {
+    const pass = prompt('🔐 Süper Admin Erişimi\nŞifre giriniz:');
+    if (pass !== superPass) {
+      if (pass !== null) alert('❌ Yanlış şifre!');
+      return;
+    }
+  }
+
+  loadSaPanel();
+  document.getElementById('superAdminOverlay').classList.add('active');
+}
+
+function closeSuperAdmin() {
+  document.getElementById('superAdminOverlay').classList.remove('active');
+}
+
+function saTab(tab) {
+  document.querySelectorAll('.sa-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.sa-section').forEach(s => s.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('sa-' + tab).classList.add('active');
+}
+
+function loadSaPanel() {
+  const cfg = getSaConfig();
+
+  // Firma
+  document.getElementById('sa-firma-adi').value = cfg.firmaAdi || COMPANY_INFO.name || '';
+  document.getElementById('sa-firma-kisa').value = cfg.firmaKisa || '';
+  document.getElementById('sa-firma-adres').value = cfg.firmaAdres || COMPANY_INFO.address || '';
+  document.getElementById('sa-firma-tel').value = cfg.firmaTel || COMPANY_INFO.phone || '';
+  document.getElementById('sa-firma-eposta').value = cfg.firmaEposta || '';
+  document.getElementById('sa-firma-vkn').value = cfg.firmaVkn || '';
+  document.getElementById('sa-firma-vd').value = cfg.firmaVd || '';
+  document.getElementById('sa-firma-iban').value = cfg.firmaIban || '';
+  document.getElementById('sa-firma-web').value = cfg.firmaWeb || '';
+  document.getElementById('sa-firma-not').value = cfg.firmaNot || '';
+
+  // Logo önizleme
+  if (cfg.logoData) {
+    const img = document.getElementById('sa-logo-preview');
+    img.src = cfg.logoData;
+    img.style.display = 'block';
+    document.getElementById('sa-logo-text').style.display = 'none';
+  }
+
+  // Font
+  if (cfg.font) document.getElementById('sa-font').value = cfg.font;
+
+  // Lisans
+  document.getElementById('sa-super-user').value = cfg.superUser || SA_DEFAULT_USER;
+  document.getElementById('sa-gizli-sifre').value = cfg.urlKey || SA_DEFAULT_URL_KEY;
+  document.getElementById('sa-url-goster').textContent = `index.html?sa=${cfg.urlKey || SA_DEFAULT_URL_KEY}`;
+
+  // Modüller
+  const mods = cfg.modules || {};
+  ['veresiye','stok','fiyat','tahsilat','kasa','teklif','proforma','raporlar','donemdevri'].forEach(m => {
+    const btn = document.getElementById('mod-' + m);
+    if (btn) {
+      const isOn = mods[m] !== false;
+      btn.classList.toggle('on', isOn);
+    }
+  });
+
+  // Seçili şablon
+  if (cfg.sektor) saSelectTemplate(cfg.sektor, false);
+}
+
+// --- FİRMA KAYDET ---
+function saFirmaSave() {
+  const cfg = getSaConfig();
+  cfg.firmaAdi = document.getElementById('sa-firma-adi').value.trim();
+  cfg.firmaKisa = document.getElementById('sa-firma-kisa').value.trim();
+  cfg.firmaAdres = document.getElementById('sa-firma-adres').value.trim();
+  cfg.firmaTel = document.getElementById('sa-firma-tel').value.trim();
+  cfg.firmaEposta = document.getElementById('sa-firma-eposta').value.trim();
+  cfg.firmaVkn = document.getElementById('sa-firma-vkn').value.trim();
+  cfg.firmaVd = document.getElementById('sa-firma-vd').value.trim();
+  cfg.firmaIban = document.getElementById('sa-firma-iban').value.trim();
+  cfg.firmaWeb = document.getElementById('sa-firma-web').value.trim();
+  cfg.firmaNot = document.getElementById('sa-firma-not').value.trim();
+  saveSaConfig(cfg);
+  applySaConfig(cfg);
+  saAlert('✅ Firma bilgileri kaydedildi!');
+}
+
+// --- LOGO ---
+function saLogoUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 500000) { alert('Logo max 500KB olmalı!'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const cfg = getSaConfig();
+    cfg.logoData = e.target.result;
+    saveSaConfig(cfg);
+    const img = document.getElementById('sa-logo-preview');
+    img.src = e.target.result;
+    img.style.display = 'block';
+    document.getElementById('sa-logo-text').style.display = 'none';
+    applySaConfig(cfg);
+    saAlert('✅ Logo yüklendi!');
+  };
+  reader.readAsDataURL(file);
+}
+
+function saLogoRemove() {
+  const cfg = getSaConfig();
+  delete cfg.logoData;
+  saveSaConfig(cfg);
+  document.getElementById('sa-logo-preview').style.display = 'none';
+  document.getElementById('sa-logo-text').style.display = 'block';
+  applySaConfig(cfg);
+  saAlert('Logo kaldırıldı');
+}
+
+// --- TEMA ---
+const SA_THEMES = {
+  cyan:   { accent:'#00d4ff', glow:'rgba(0,212,255,0.15)' },
+  blue:   { accent:'#3b82f6', glow:'rgba(59,130,246,0.15)' },
+  purple: { accent:'#8b5cf6', glow:'rgba(139,92,246,0.15)' },
+  green:  { accent:'#22c55e', glow:'rgba(34,197,94,0.15)' },
+  amber:  { accent:'#f59e0b', glow:'rgba(245,158,11,0.15)' },
+  red:    { accent:'#ef4444', glow:'rgba(239,68,68,0.15)' },
+  pink:   { accent:'#ec4899', glow:'rgba(236,72,153,0.15)' },
+  teal:   { accent:'#14b8a6', glow:'rgba(20,184,166,0.15)' }
+};
+
+const SA_BG = {
+  dark:   '#0a0e1a',
+  darker: '#060810',
+  navy:   '#0f0f23',
+  black:  '#0a0a0a'
+};
+
+let _saSelectedTheme = 'cyan';
+let _saSelectedBg = 'dark';
+
+function saSetTheme(name) {
+  _saSelectedTheme = name;
+  document.querySelectorAll('.color-swatch').forEach((s,i) => {
+    if (i < 8) s.classList.toggle('selected', Object.keys(SA_THEMES)[i] === name);
+  });
+  const t = SA_THEMES[name];
+  if (t) document.documentElement.style.setProperty('--accent', t.accent);
+}
+
+function saBg(name) {
+  _saSelectedBg = name;
+  const color = SA_BG[name];
+  if (color) document.documentElement.style.setProperty('--bg', color);
+}
+
+function saFontPreview(font) {
+  document.getElementById('sa-font-preview').style.fontFamily = `'${font}', sans-serif`;
+}
+
+function saTemaSave() {
+  const cfg = getSaConfig();
+  cfg.theme = _saSelectedTheme;
+  cfg.bg = _saSelectedBg;
+  cfg.font = document.getElementById('sa-font').value;
+  saveSaConfig(cfg);
+  applySaConfig(cfg);
+  saAlert('✅ Tema kaydedildi!');
+}
+
+// --- SEKTÖR ŞABLONLARI ---
+const SA_TEMPLATES = {
+  elektrik: { name:'Elektrik & Elektronik', cats:['Kablo & Teller','Sigortalar','Anahtarlar & Prizler','Aydınlatma','Transformatörler','Kondansatörler','Röle & Kontaktör','Pano Malzemeleri','Sensörler','Motorlar','Diğer'] },
+  market:   { name:'Market / Bakkal', cats:['Gıda','İçecek','Temizlik','Kişisel Bakım','Bakliyat','Şarküteri','Fırın Ürünleri','Dondurulmuş','Diğer'] },
+  insaat:   { name:'İnşaat Malzemeleri', cats:['Demir & Çelik','Çimento & Alçı','Boya & Cila','Seramik & Fayans','Boru & Tesisat','Elektrik Malz.','Ahşap & Panel','İzolasyon','Diğer'] },
+  tekstil:  { name:'Tekstil / Giyim', cats:['Üst Giyim','Alt Giyim','Dış Giyim','İç Çamaşır','Çocuk Giyim','Ayakkabı','Aksesuar','Kumaş','Diğer'] },
+  oto:      { name:'Otomotiv / Yedek Parça', cats:['Motor Parçaları','Fren Sistemi','Süspansiyon','Elektrik','Kaporta','Lastik & Jant','Yağ & Akışkan','Aksesuar','Diğer'] },
+  eczane:   { name:'Eczane / Sağlık', cats:['Reçeteli İlaç','Reçetesiz İlaç','Vitamin & Takviye','Medikal Malz.','Kozmetik','Bebek Ürünleri','Doğal Ürünler','Diğer'] },
+  restoran: { name:'Restoran / Kafe', cats:['Ana Yemek','Çorba','Salata','Tatlı','İçecek','Fast Food','Kahvaltı','Özel Menü','Diğer'] },
+  tarim:    { name:'Tarım / Zirai', cats:['Gübre','Zirai İlaç','Tohum','Sulama','Makine Parçası','Sera Malz.','Hayvancılık','Diğer'] },
+  ozel:     { name:'Özel / Diğer', cats:['Kategori 1','Kategori 2','Kategori 3','Kategori 4','Kategori 5','Diğer'] }
+};
+
+function saSelectTemplate(name, showMsg=true) {
+  _saSelectedTemplate = name;
+  document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+  const el = document.getElementById('tpl-' + name);
+  if (el) el.classList.add('selected');
+  const tpl = SA_TEMPLATES[name];
+  if (tpl) {
+    document.getElementById('sa-sektor-kategoriler').innerHTML = `
+      <div style="margin-bottom:6px;color:#e6edf3;font-weight:600">${tpl.name} Kategorileri:</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        ${tpl.cats.map(c=>`<span style="background:#21262d;border:1px solid #30363d;border-radius:4px;padding:3px 8px;font-size:11px;color:#8b949e">${c}</span>`).join('')}
+      </div>`;
+  }
+}
+let _saSelectedTemplate = 'elektrik';
+
+function saSektorSave() {
+  const cfg = getSaConfig();
+  cfg.sektor = _saSelectedTemplate;
+  cfg.categories = SA_TEMPLATES[_saSelectedTemplate]?.cats || [];
+  saveSaConfig(cfg);
+  // Ürün ekle formundaki kategorileri güncelle
+  applySaCategories(cfg.categories);
+  saAlert('✅ Sektör şablonu uygulandı!');
+}
+
+function applySaCategories(cats) {
+  const selects = ['prod-cat', 'zam-category'];
+  selects.forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const opts = cats.map(c=>`<option value="${c}">${c}</option>`).join('');
+    if (id === 'zam-category') sel.innerHTML = '<option value="">Tüm Kategoriler</option>' + opts;
+    else sel.innerHTML = opts;
+  });
+}
+
+// --- MODÜLLER ---
+function saToggleMod(btn) {
+  btn.classList.toggle('on');
+}
+
+function saModulSave() {
+  const cfg = getSaConfig();
+  cfg.modules = {};
+  ['veresiye','stok','fiyat','tahsilat','kasa','teklif','proforma','raporlar','donemdevri'].forEach(m => {
+    const btn = document.getElementById('mod-' + m);
+    cfg.modules[m] = btn ? btn.classList.contains('on') : true;
+  });
+  saveSaConfig(cfg);
+  applyModules(cfg.modules);
+  saAlert('✅ Modül ayarları kaydedildi! Sayfa yenilenince uygulanır.');
+}
+
+function applyModules(mods) {
+  if (!mods) return;
+  Object.entries(mods).forEach(([page, enabled]) => {
+    const navEl = document.querySelector(`[onclick="navigate('${page}')"]`);
+    if (navEl) navEl.style.display = enabled ? '' : 'none';
+  });
+}
+
+// --- LİSANS ---
+function saLisansSave() {
+  const cfg = getSaConfig();
+  cfg.urlKey = document.getElementById('sa-gizli-sifre').value.trim() || SA_DEFAULT_URL_KEY;
+  cfg.superUser = document.getElementById('sa-super-user').value.trim() || SA_DEFAULT_USER;
+  const newPass = document.getElementById('sa-super-pass').value;
+  if (newPass.length >= 6) cfg.superPass = newPass;
+  saveSaConfig(cfg);
+  document.getElementById('sa-url-goster').textContent = `index.html?sa=${cfg.urlKey}`;
+  saAlert('✅ Erişim ayarları kaydedildi!');
+}
+
+// --- UYGULA ---
+function applySaConfig(cfg) {
+  if (!cfg) return;
+
+  // Firma adı
+  if (cfg.firmaAdi) {
+    COMPANY_INFO.name = cfg.firmaAdi;
+    COMPANY_INFO.address = cfg.firmaAdres || '';
+    COMPANY_INFO.phone = cfg.firmaTel || '';
+    COMPANY_INFO.email = cfg.firmaEposta || '';
+    COMPANY_INFO.taxNo = cfg.firmaVkn || '';
+    COMPANY_INFO.taxOffice = cfg.firmaVd || '';
+    COMPANY_INFO.iban = cfg.firmaIban || '';
+    // Sayfa başlığı
+    document.title = (cfg.firmaKisa || cfg.firmaAdi) + ' — Yönetim Sistemi';
+    // Sidebar logo yazısı
+    const logoTitle = document.querySelector('.logo-title');
+    if (logoTitle) logoTitle.textContent = cfg.firmaKisa || cfg.firmaAdi;
+    const loginTitle = document.querySelector('.login-title');
+    if (loginTitle) loginTitle.textContent = cfg.firmaAdi;
+  }
+
+  // Logo
+  if (cfg.logoData) {
+    const imgs = ['sidebarLogo','loginLogo'];
+    imgs.forEach(id => { const el=document.getElementById(id); if(el) el.src=cfg.logoData; });
+  }
+
+  // Tema rengi
+  if (cfg.theme && SA_THEMES[cfg.theme]) {
+    const t = SA_THEMES[cfg.theme];
+    document.documentElement.style.setProperty('--accent', t.accent);
+    document.documentElement.style.setProperty('--glow', t.glow);
+  }
+
+  // Arka plan
+  if (cfg.bg && SA_BG[cfg.bg]) {
+    document.documentElement.style.setProperty('--bg', SA_BG[cfg.bg]);
+  }
+
+  // Font
+  if (cfg.font) {
+    document.body.style.fontFamily = `'${cfg.font}', sans-serif`;
+    // Google Fonts'tan yükle
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = `https://fonts.googleapis.com/css2?family=${cfg.font.replace(/ /g,'+')}:wght@300;400;500;600;700&display=swap`;
+    document.head.appendChild(link);
+  }
+
+  // Modüller
+  if (cfg.modules) applyModules(cfg.modules);
+
+  // Kategoriler
+  if (cfg.categories) applySaCategories(cfg.categories);
+}
+
+function saAlert(msg) {
+  const div = document.createElement('div');
+  div.style.cssText = 'position:fixed;bottom:100px;right:24px;background:#161b22;border:1px solid #00d4ff;color:#00d4ff;padding:10px 16px;border-radius:8px;font-size:13px;z-index:99999;font-weight:600';
+  div.textContent = msg;
+  document.body.appendChild(div);
+  setTimeout(() => div.remove(), 2500);
+}
+
+// Sayfa yüklenince sa config uygula
+window.addEventListener('load', () => {
+  const cfg = getSaConfig();
+  if (Object.keys(cfg).length > 0) applySaConfig(cfg);
+  checkSaUrl();
+});
+
 // ============ DÖVİZ KURU ============
 let _dovizPrev = {};
 
@@ -4272,6 +4697,262 @@ if (window._firebaseReady) {
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('securityLog')">Kapat</button>
+    </div>
+  </div>
+</div>
+
+<!-- SÜPER ADMİN PANELİ -->
+<div class="sa-overlay" id="superAdminOverlay">
+  <div class="sa-panel">
+    <div class="sa-head">
+      <div class="sa-title">
+        ⚙️ Süper Admin Paneli
+        <span class="sa-badge">GİZLİ PANEL</span>
+      </div>
+      <button onclick="closeSuperAdmin()" style="background:none;border:none;color:#8b949e;font-size:22px;cursor:pointer;padding:4px 8px">×</button>
+    </div>
+
+    <!-- Sekmeler -->
+    <div class="sa-tabs">
+      <div class="sa-tab active" onclick="saTab('firma')">🏢 Firma</div>
+      <div class="sa-tab" onclick="saTab('tema')">🎨 Tema</div>
+      <div class="sa-tab" onclick="saTab('sektor')">🏭 Sektör</div>
+      <div class="sa-tab" onclick="saTab('moduller')">🔧 Modüller</div>
+      <div class="sa-tab" onclick="saTab('lisans')">🔑 Lisans</div>
+    </div>
+
+    <div class="sa-body">
+
+      <!-- FİRMA BİLGİLERİ -->
+      <div class="sa-section active" id="sa-firma">
+        <div class="sa-grid">
+          <div class="sa-card">
+            <div class="sa-card-title">🏢 Firma Bilgileri</div>
+            <label class="sa-label">Firma Adı *</label>
+            <input class="sa-input" id="sa-firma-adi" placeholder="Sekmen Elektrik-Elektronik">
+            <label class="sa-label">Kısa Ad (Uygulama başlığı)</label>
+            <input class="sa-input" id="sa-firma-kisa" placeholder="Sekmen Elektrik">
+            <label class="sa-label">Adres</label>
+            <input class="sa-input" id="sa-firma-adres" placeholder="Balıkesir">
+            <label class="sa-label">Telefon</label>
+            <input class="sa-input" id="sa-firma-tel" placeholder="0266 xxx xx xx">
+            <label class="sa-label">E-Posta</label>
+            <input class="sa-input" id="sa-firma-eposta" placeholder="info@firma.com">
+          </div>
+          <div class="sa-card">
+            <div class="sa-card-title">🧾 Fatura Bilgileri</div>
+            <label class="sa-label">Vergi No</label>
+            <input class="sa-input" id="sa-firma-vkn" placeholder="1234567890">
+            <label class="sa-label">Vergi Dairesi</label>
+            <input class="sa-input" id="sa-firma-vd" placeholder="Balıkesir VD">
+            <label class="sa-label">IBAN</label>
+            <input class="sa-input" id="sa-firma-iban" placeholder="TR00 0000 0000 0000 0000 0000 00">
+            <label class="sa-label">Web Sitesi</label>
+            <input class="sa-input" id="sa-firma-web" placeholder="www.firma.com">
+            <label class="sa-label">Fatura Alt Notu</label>
+            <input class="sa-input" id="sa-firma-not" placeholder="Teşekkür ederiz.">
+          </div>
+        </div>
+        <div class="sa-card" style="margin-bottom:16px">
+          <div class="sa-card-title">🖼️ Logo</div>
+          <div class="logo-upload-area" onclick="document.getElementById('sa-logo-input').click()">
+            <input type="file" id="sa-logo-input" accept="image/*" style="display:none" onchange="saLogoUpload(this)">
+            <img id="sa-logo-preview" class="logo-preview" style="display:none;margin:0 auto 10px">
+            <div id="sa-logo-text" style="color:#8b949e;font-size:13px">📁 Logo yüklemek için tıklayın<br><span style="font-size:11px">PNG, JPG, SVG — Max 500KB</span></div>
+          </div>
+          <button class="sa-btn sa-btn-danger" onclick="saLogoRemove()" style="font-size:12px">🗑 Logoyu Kaldır</button>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end">
+          <button class="sa-btn sa-btn-primary" onclick="saFirmaSave()">💾 Firma Bilgilerini Kaydet</button>
+        </div>
+      </div>
+
+      <!-- TEMA -->
+      <div class="sa-section" id="sa-tema">
+        <div class="sa-card" style="margin-bottom:16px">
+          <div class="sa-card-title">🎨 Renk Teması</div>
+          <div style="margin-bottom:16px">
+            <label class="sa-label">Hazır Temalar</label>
+            <div class="color-picker-row">
+              <div class="color-swatch selected" style="background:#00d4ff" onclick="saSetTheme('cyan')" title="Cyan (Varsayılan)"></div>
+              <div class="color-swatch" style="background:#3b82f6" onclick="saSetTheme('blue')" title="Mavi"></div>
+              <div class="color-swatch" style="background:#8b5cf6" onclick="saSetTheme('purple')" title="Mor"></div>
+              <div class="color-swatch" style="background:#22c55e" onclick="saSetTheme('green')" title="Yeşil"></div>
+              <div class="color-swatch" style="background:#f59e0b" onclick="saSetTheme('amber')" title="Amber"></div>
+              <div class="color-swatch" style="background:#ef4444" onclick="saSetTheme('red')" title="Kırmızı"></div>
+              <div class="color-swatch" style="background:#ec4899" onclick="saSetTheme('pink')" title="Pembe"></div>
+              <div class="color-swatch" style="background:#14b8a6" onclick="saSetTheme('teal')" title="Teal"></div>
+            </div>
+          </div>
+          <div style="margin-bottom:16px">
+            <label class="sa-label">Arka Plan Rengi</label>
+            <div style="display:flex;gap:10px;align-items:center">
+              <div class="color-swatch" style="background:#0a0e1a;border:1px solid #444" onclick="saBg('dark')" title="Koyu (Varsayılan)"></div>
+              <div class="color-swatch" style="background:#0f172a" onclick="saBg('darker')" title="Çok Koyu"></div>
+              <div class="color-swatch" style="background:#1a1a2e" onclick="saBg('navy')" title="Lacivert"></div>
+              <div class="color-swatch" style="background:#111111" onclick="saBg('black')" title="Siyah"></div>
+            </div>
+          </div>
+          <div id="sa-tema-onizleme" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;display:flex;gap:10px;align-items:center">
+            <div style="width:40px;height:40px;background:var(--accent);border-radius:8px;opacity:0.9"></div>
+            <div>
+              <div style="font-weight:700;color:var(--accent)">Tema Önizleme</div>
+              <div style="font-size:12px;color:var(--text2)">Seçilen renk bu şekilde görünür</div>
+            </div>
+          </div>
+        </div>
+        <div class="sa-card" style="margin-bottom:16px">
+          <div class="sa-card-title">🔤 Font</div>
+          <select class="sa-select" id="sa-font" onchange="saFontPreview(this.value)">
+            <option value="Roboto">Roboto (Varsayılan)</option>
+            <option value="Open Sans">Open Sans</option>
+            <option value="Poppins">Poppins</option>
+            <option value="Inter">Inter</option>
+            <option value="Nunito">Nunito</option>
+            <option value="Raleway">Raleway</option>
+          </select>
+          <div id="sa-font-preview" style="font-size:15px;padding:10px;background:#0d1117;border-radius:6px;border:1px solid #30363d">
+            Merhaba, bu yazı tipi önizlemesi. Abc 123 ₺
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end">
+          <button class="sa-btn sa-btn-primary" onclick="saTemaSave()">💾 Temayı Kaydet</button>
+        </div>
+      </div>
+
+      <!-- SEKTÖR -->
+      <div class="sa-section" id="sa-sektor">
+        <div class="sa-card" style="margin-bottom:16px">
+          <div class="sa-card-title">🏭 Sektör Şablonu Seç</div>
+          <div class="template-grid">
+            <div class="template-card selected" id="tpl-elektrik" onclick="saSelectTemplate('elektrik')">
+              <div class="template-icon">⚡</div>
+              <div class="template-name">Elektrik & Elektronik</div>
+              <div class="template-desc">Kablo, sigorta, anahtar</div>
+            </div>
+            <div class="template-card" id="tpl-market" onclick="saSelectTemplate('market')">
+              <div class="template-icon">🛒</div>
+              <div class="template-name">Market / Bakkal</div>
+              <div class="template-desc">Gıda, içecek, temizlik</div>
+            </div>
+            <div class="template-card" id="tpl-insaat" onclick="saSelectTemplate('insaat')">
+              <div class="template-icon">🏗️</div>
+              <div class="template-name">İnşaat Malzemeleri</div>
+              <div class="template-desc">Demir, çimento, boya</div>
+            </div>
+            <div class="template-card" id="tpl-tekstil" onclick="saSelectTemplate('tekstil')">
+              <div class="template-icon">👗</div>
+              <div class="template-name">Tekstil / Giyim</div>
+              <div class="template-desc">Kumaş, giysi, aksesuar</div>
+            </div>
+            <div class="template-card" id="tpl-oto" onclick="saSelectTemplate('oto')">
+              <div class="template-icon">🚗</div>
+              <div class="template-name">Otomotiv / Yedek Parça</div>
+              <div class="template-desc">Araba, motor, aksam</div>
+            </div>
+            <div class="template-card" id="tpl-eczane" onclick="saSelectTemplate('eczane')">
+              <div class="template-icon">💊</div>
+              <div class="template-name">Eczane / Sağlık</div>
+              <div class="template-desc">İlaç, medikal ürün</div>
+            </div>
+            <div class="template-card" id="tpl-restoran" onclick="saSelectTemplate('restoran')">
+              <div class="template-icon">🍽️</div>
+              <div class="template-name">Restoran / Kafe</div>
+              <div class="template-desc">Yiyecek, içecek, menü</div>
+            </div>
+            <div class="template-card" id="tpl-tarim" onclick="saSelectTemplate('tarim')">
+              <div class="template-icon">🌾</div>
+              <div class="template-name">Tarım / Zirai</div>
+              <div class="template-desc">Gübre, ilaç, tohum</div>
+            </div>
+            <div class="template-card" id="tpl-ozel" onclick="saSelectTemplate('ozel')">
+              <div class="template-icon">✏️</div>
+              <div class="template-name">Özel / Diğer</div>
+              <div class="template-desc">Kendi kategorileriniz</div>
+            </div>
+          </div>
+          <div id="sa-sektor-kategoriler" style="background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:12px;font-size:12px;color:#8b949e">
+            Şablon seçince kategoriler burada görünecek...
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end">
+          <button class="sa-btn sa-btn-primary" onclick="saSektorSave()">💾 Şablonu Uygula</button>
+        </div>
+      </div>
+
+      <!-- MODÜLLER -->
+      <div class="sa-section" id="sa-moduller">
+        <div class="sa-card" style="margin-bottom:16px">
+          <div class="sa-card-title">📦 Sayfa Modülleri</div>
+          <div class="module-toggle-row">
+            <div><div style="font-weight:600;font-size:13px">📒 Veresiye Defteri</div><div style="font-size:11px;color:#8b949e">Müşteri borç takibi</div></div>
+            <button class="sa-toggle on" id="mod-veresiye" onclick="saToggleMod(this,'veresiye')"></button>
+          </div>
+          <div class="module-toggle-row">
+            <div><div style="font-weight:600;font-size:13px">📦 Stok Takibi</div><div style="font-size:11px;color:#8b949e">Ürün ve stok yönetimi</div></div>
+            <button class="sa-toggle on" id="mod-stok" onclick="saToggleMod(this,'stok')"></button>
+          </div>
+          <div class="module-toggle-row">
+            <div><div style="font-weight:600;font-size:13px">🏷️ Fiyat Sorgulama</div><div style="font-size:11px;color:#8b949e">Hızlı fiyat arama</div></div>
+            <button class="sa-toggle on" id="mod-fiyat" onclick="saToggleMod(this,'fiyat')"></button>
+          </div>
+          <div class="module-toggle-row">
+            <div><div style="font-weight:600;font-size:13px">💰 Tahsilat</div><div style="font-size:11px;color:#8b949e">Ödeme alma</div></div>
+            <button class="sa-toggle on" id="mod-tahsilat" onclick="saToggleMod(this,'tahsilat')"></button>
+          </div>
+          <div class="module-toggle-row">
+            <div><div style="font-weight:600;font-size:13px">🏦 Günlük Kasa</div><div style="font-size:11px;color:#8b949e">Günlük gelir/gider raporu</div></div>
+            <button class="sa-toggle on" id="mod-kasa" onclick="saToggleMod(this,'kasa')"></button>
+          </div>
+          <div class="module-toggle-row">
+            <div><div style="font-weight:600;font-size:13px">📄 Teklif</div><div style="font-size:11px;color:#8b949e">Müşteriye teklif hazırlama</div></div>
+            <button class="sa-toggle on" id="mod-teklif" onclick="saToggleMod(this,'teklif')"></button>
+          </div>
+          <div class="module-toggle-row">
+            <div><div style="font-weight:600;font-size:13px">🧾 Proforma Fatura</div><div style="font-size:11px;color:#8b949e">Proforma fatura düzenleme</div></div>
+            <button class="sa-toggle on" id="mod-proforma" onclick="saToggleMod(this,'proforma')"></button>
+          </div>
+          <div class="module-toggle-row">
+            <div><div style="font-weight:600;font-size:13px">📈 Raporlar</div><div style="font-size:11px;color:#8b949e">Satış ve stok analizleri</div></div>
+            <button class="sa-toggle on" id="mod-raporlar" onclick="saToggleMod(this,'raporlar')"></button>
+          </div>
+          <div class="module-toggle-row">
+            <div><div style="font-weight:600;font-size:13px">🔄 Dönem Devri</div><div style="font-size:11px;color:#8b949e">Dönem kapatma ve arşiv</div></div>
+            <button class="sa-toggle on" id="mod-donemdevri" onclick="saToggleMod(this,'donemdevri')"></button>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end">
+          <button class="sa-btn sa-btn-primary" onclick="saModulSave()">💾 Modül Ayarlarını Kaydet</button>
+        </div>
+      </div>
+
+      <!-- LİSANS -->
+      <div class="sa-section" id="sa-lisans">
+        <div class="sa-card" style="margin-bottom:16px">
+          <div class="sa-card-title">🔑 Gizli Panel Erişim Ayarları</div>
+          <label class="sa-label">Süper Admin Şifresi (URL parametresi)</label>
+          <input class="sa-input" id="sa-gizli-sifre" type="password" placeholder="Gizli URL şifresi">
+          <div style="font-size:11px;color:#8b949e;margin-bottom:12px">
+            Bu şifreyle: <code style="color:#00d4ff">index.html?sa=SIFRE</code> yazarak panele erişilir.
+          </div>
+          <label class="sa-label">Süper Admin Kullanıcı Adı</label>
+          <input class="sa-input" id="sa-super-user" placeholder="superadmin">
+          <label class="sa-label">Süper Admin Şifresi (Giriş)</label>
+          <input class="sa-input" id="sa-super-pass" type="password" placeholder="Giriş şifresi">
+        </div>
+        <div class="sa-card" style="margin-bottom:16px">
+          <div class="sa-card-title">📋 Panel Erişim Bilgisi</div>
+          <div style="font-size:12px;color:#8b949e;line-height:2">
+            <div>🔗 <b>URL ile erişim:</b> <code id="sa-url-goster" style="color:#00d4ff">index.html?sa=...</code></div>
+            <div>⌨️ <b>Klavye kısayolu:</b> <code style="color:#00d4ff">Ctrl + Shift + F12</code></div>
+            <div>👤 <b>Süper Admin:</b> Sadece bu kimlik bilgileriyle erişilir</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;justify-content:flex-end">
+          <button class="sa-btn sa-btn-primary" onclick="saLisansSave()">💾 Erişim Ayarlarını Kaydet</button>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
