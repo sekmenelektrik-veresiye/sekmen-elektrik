@@ -3331,10 +3331,22 @@ function applyRoleUI(role, perms) {
 function showApp(username, role) {
   document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('topbarUsername').textContent = username || 'admin';
-  const auth = getAuth();
-  if (auth.password !== DEFAULT_PASS) {
 
+  // Mobil ise sidebar'ı JS ile kesin gizle
+  if (window.innerWidth <= 768) {
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar) {
+      sidebar.style.cssText = 'display:none!important;width:0!important;overflow:hidden!important;visibility:hidden!important';
+    }
+    // Topbar butonlarını gizle
+    ['exportBtn','backupPanelBtn'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
   }
+
+  const auth = getAuth();
+  if (auth.password !== DEFAULT_PASS) {}
   if (!role) {
     const session = JSON.parse(sessionStorage.getItem('etrade_session')||'{}');
     role = session.role || 'admin';
@@ -4785,6 +4797,14 @@ renderDashboard();
 updatePriceQuerySelect();
 initAuth();
 injectLogo();
+
+// Mobil kontrolü — sidebar'ı direkt gizle
+if (window.innerWidth <= 768) {
+  const sidebar = document.querySelector('.sidebar');
+  if (sidebar) sidebar.style.cssText = 'display:none!important;width:0!important;overflow:hidden!important;';
+  document.body.style.overflowX = 'hidden';
+}
+
 // Kasa tarihini bugüne ayarla
 const kasaDateEl = document.getElementById('kasa-date');
 if (kasaDateEl) kasaDateEl.value = new Date().toISOString().split('T')[0];
