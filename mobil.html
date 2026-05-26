@@ -444,47 +444,52 @@ window.dispatchEvent(new Event('firebaseReady'));
   .perm-icon { font-size:15px; flex-shrink:0; }
 
   /* ===== MOBİL (≤480px) ===== */
-  @media (max-width: 480px) {
-    .sidebar { display: none !important; }
-    .app { flex-direction: column; }
-    .main { width: 100%; height: 100vh; }
-    .topbar { padding: 0 12px; height: 52px; }
-    .page-title { font-size: 14px; }
-    .page-badge { display: none; }
-    #syncStatus { font-size: 10px; padding: 4px 6px; }
-    #sessionTimer { font-size: 10px; padding: 4px 6px; }
-    .topbar-right { gap: 6px; }
-    .topbar-user span:last-child { display: none; }
-    .btn-sm { padding: 6px 10px; font-size: 11px; }
-    .topbar-right button:first-child { display: none; }
-    .content { padding: 12px; padding-bottom: 80px; height: calc(100vh - 52px); }
-    .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
-    .stat-card { padding: 12px; }
-    .stat-value { font-size: 18px; }
-    .stat-icon { font-size: 22px; }
-    .table-card { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    table { min-width: 560px; font-size: 12px; }
-    th, td { padding: 8px 10px; white-space: nowrap; }
-    .btn { padding: 10px 14px; font-size: 12px; }
-    .two-col { grid-template-columns: 1fr; gap: 12px; }
-    .kasa-summary { grid-template-columns: 1fr; }
-    .full-col { margin-top: 12px; }
-    .modal { width: 100% !important; max-width: 100% !important; max-height: 92vh !important; border-radius: 16px 16px 0 0 !important; margin: 0; position: fixed; bottom: 0; left: 0; right: 0; }
+  @media (max-width: 768px) {
+    .sidebar { display: none !important; width: 0 !important; overflow: hidden !important; }
+    .app { flex-direction: column !important; }
+    .main { width: 100% !important; max-width: 100vw !important; overflow-x: hidden; }
+    .topbar { padding: 0 10px !important; height: 52px !important; }
+    .page-title { font-size: 13px !important; }
+    .page-badge { display: none !important; }
+    #syncStatus { display: none !important; }
+    #sessionTimer { display: none !important; }
+    #dovizBar { display: none !important; }
+    .topbar-right { gap: 5px !important; }
+    .topbar-user span:last-child { display: none !important; }
+    .topbar-right .btn-sm { display: none !important; }
+    .topbar-right #exportBtn { display: none !important; }
+    .content { padding: 10px !important; padding-bottom: 80px !important; height: calc(100vh - 52px) !important; overflow-x: hidden !important; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; margin-bottom: 12px !important; }
+    .stat-card { padding: 12px !important; }
+    .stat-value { font-size: 17px !important; }
+    .stat-icon { font-size: 20px !important; }
+    .table-card { overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; }
+    table { min-width: 520px !important; font-size: 12px !important; }
+    th, td { padding: 7px 9px !important; white-space: nowrap !important; }
+    .btn { padding: 9px 12px !important; font-size: 12px !important; }
+    .btn-sm { padding: 6px 9px !important; font-size: 11px !important; }
+    .two-col { grid-template-columns: 1fr !important; gap: 10px !important; }
+    .kasa-summary { grid-template-columns: 1fr !important; }
+    .full-col { margin-top: 10px !important; }
+    .modal { width: 100% !important; max-width: 100% !important; max-height: 92vh !important; border-radius: 16px 16px 0 0 !important; margin: 0 !important; position: fixed !important; bottom: 0 !important; left: 0 !important; right: 0 !important; }
     .modal-overlay { align-items: flex-end !important; }
-    .form-row { grid-template-columns: 1fr !important; gap: 10px; }
-    .form-input, .form-select { padding: 12px 14px; font-size: 14px; }
-    .login-card { padding: 32px 24px; width: 100%; max-width: 100%; border-radius: 0; min-height: 100vh; justify-content: center; display: flex; flex-direction: column; }
-    .toast { bottom: 90px; right: 12px; left: 12px; max-width: 100%; }
+    .form-row { grid-template-columns: 1fr !important; gap: 10px !important; }
+    .form-input, .form-select { padding: 12px 14px !important; font-size: 14px !important; }
+    .login-card { padding: 28px 20px !important; width: 100% !important; max-width: 100% !important; border-radius: 0 !important; min-height: 100vh !important; justify-content: center !important; display: flex !important; flex-direction: column !important; }
+    .toast { bottom: 90px !important; right: 12px !important; left: 12px !important; max-width: calc(100vw - 24px) !important; }
     #tkLines > div { grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
     #tkLinesHeader { display: none !important; }
     #permGrid { grid-template-columns: 1fr !important; }
     #pfLinesHeader { display: none !important; }
     #pfLines > div { grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
+    .sa-grid { grid-template-columns: 1fr !important; }
+    .template-grid { grid-template-columns: repeat(2,1fr) !important; }
+    * { max-width: 100vw; }
   }
 
   /* ===== ALT NAVİGASYON ===== */
   .bottom-nav { display: none; }
-  @media (max-width: 480px) {
+  @media (max-width: 768px) {
     .bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; height: 64px; background: var(--surface); border-top: 1px solid var(--border); z-index: 600; align-items: stretch; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom); }
     .bnav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 4px 2px; cursor: pointer; flex: 1; color: var(--text3); -webkit-tap-highlight-color: rgba(0,212,255,0.15); border: none; background: none; touch-action: manipulation; user-select: none; -webkit-user-select: none; min-height: 64px; }
     .bnav-item.active { color: var(--accent); background: rgba(0,212,255,0.06); }
