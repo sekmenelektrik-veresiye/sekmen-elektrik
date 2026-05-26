@@ -1,0 +1,21 @@
+{
+  "name": "Sekmen Elektrik-Elektronik",
+  "short_name": "Sekmen Elektrik",
+  "description": "Veresiye & Stok Yönetim Sistemi",
+  "start_url": "/sekmen-elektrik/mobil.html",
+  "scope": "/sekmen-elektrik/",
+  "display": "standalone",
+  "background_color": "#0a0e1a",
+  "theme_color": "#00d4ff",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230a0e1a' rx='20'/><text y='70' x='50' text-anchor='middle' font-size='60'>⚡</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "lang": "tr"
+}
