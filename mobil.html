@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sekmen Elektrik-Elektronik — Veresiye & Stok Yönetimi</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&family=Open+Sans:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script type="module">
@@ -59,7 +59,7 @@ window.dispatchEvent(new Event('firebaseReady'));
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Roboto', 'Open Sans', sans-serif;
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
@@ -86,7 +86,7 @@ window.dispatchEvent(new Event('firebaseReady'));
   }
   .logo-icon { font-size: 22px; margin-bottom: 4px; }
   .logo-title { font-size: 16px; font-weight: 800; color: var(--accent); letter-spacing: -0.5px; }
-  .logo-sub { font-size: 11px; color: var(--text3); font-family: 'JetBrains Mono', monospace; }
+  .logo-sub { font-size: 11px; color: var(--text3); font-family: 'Roboto Mono', monospace; }
 
   .nav { flex: 1; padding: 12px 0; overflow-y: auto; }
   .nav::-webkit-scrollbar { width: 3px; }
@@ -103,13 +103,13 @@ window.dispatchEvent(new Event('firebaseReady'));
   .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
 
   .nav-section {
-    font-size: 10px; font-weight: 700; color: var(--text3); letter-spacing: 1.5px;
-    padding: 16px 20px 6px; text-transform: uppercase; font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700; color: var(--text3); letter-spacing: 0.3px;
+    padding: 16px 20px 6px; text-transform: uppercase; font-family: 'Roboto Mono', monospace;
   }
 
   .sidebar-footer {
     padding: 16px 20px; border-top: 1px solid var(--border);
-    font-size: 11px; color: var(--text3); font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--text3); font-family: 'Roboto Mono', monospace;
   }
 
   /* MAIN */
@@ -124,13 +124,13 @@ window.dispatchEvent(new Event('firebaseReady'));
   .page-title { font-size: 18px; font-weight: 800; }
   .page-badge {
     background: rgba(0,212,255,0.1); color: var(--accent);
-    font-size: 10px; font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-family: 'Roboto Mono', monospace;
     padding: 3px 8px; border-radius: 4px; border: 1px solid rgba(0,212,255,0.2);
   }
   .topbar-right { display: flex; align-items: center; gap: 10px; }
   .btn {
     padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700;
-    cursor: pointer; border: none; font-family: 'Syne', sans-serif;
+    cursor: pointer; border: none; font-family: 'Roboto', 'Open Sans', sans-serif;
     transition: all 0.2s; display: flex; align-items: center; gap: 6px;
     letter-spacing: 0.3px;
   }
@@ -163,7 +163,7 @@ window.dispatchEvent(new Event('firebaseReady'));
     content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
     background: var(--card-color, var(--accent));
   }
-  .stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; font-family: 'JetBrains Mono', monospace; margin-bottom: 8px; }
+  .stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.2px; font-family: 'Roboto Mono', monospace; margin-bottom: 8px; }
   .stat-value { font-size: 26px; font-weight: 800; margin-bottom: 4px; }
   .stat-sub { font-size: 11px; color: var(--text2); }
   .stat-icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 32px; opacity: 0.1; }
@@ -180,7 +180,7 @@ window.dispatchEvent(new Event('firebaseReady'));
   .table-actions { display: flex; gap: 8px; align-items: center; }
   .search-input {
     background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
-    padding: 7px 12px; color: var(--text); font-size: 12px; font-family: 'Syne', sans-serif;
+    padding: 7px 12px; color: var(--text); font-size: 12px; font-family: 'Roboto', 'Open Sans', sans-serif;
     outline: none; transition: border-color 0.2s; width: 200px;
   }
   .search-input:focus { border-color: var(--accent); }
@@ -190,7 +190,7 @@ window.dispatchEvent(new Event('firebaseReady'));
   th {
     background: var(--surface2); padding: 11px 16px; text-align: left;
     font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase;
-    letter-spacing: 1px; font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.2px; font-family: 'Roboto Mono', monospace;
     border-bottom: 1px solid var(--border);
   }
   td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid rgba(31,48,88,0.5); }
@@ -200,7 +200,7 @@ window.dispatchEvent(new Event('firebaseReady'));
   .badge {
     display: inline-flex; align-items: center; gap: 4px;
     padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'Roboto Mono', monospace;
   }
   .badge-green { background: rgba(34,197,94,0.12); color: var(--accent3); border: 1px solid rgba(34,197,94,0.2); }
   .badge-red { background: rgba(239,68,68,0.12); color: var(--danger); border: 1px solid rgba(239,68,68,0.2); }
@@ -208,7 +208,7 @@ window.dispatchEvent(new Event('firebaseReady'));
   .badge-blue { background: rgba(0,212,255,0.10); color: var(--accent); border: 1px solid rgba(0,212,255,0.2); }
   .badge-gray { background: rgba(148,163,184,0.1); color: var(--text2); border: 1px solid rgba(148,163,184,0.2); }
 
-  .amount { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+  .amount { font-family: 'Roboto Mono', monospace; font-weight: 600; }
   .amount-positive { color: var(--accent3); }
   .amount-negative { color: var(--danger); }
   .amount-warn { color: var(--warn); }
@@ -243,7 +243,7 @@ window.dispatchEvent(new Event('firebaseReady'));
   .form-label { font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
   .form-input, .form-select {
     background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
-    padding: 10px 12px; color: var(--text); font-size: 13px; font-family: 'Syne', sans-serif;
+    padding: 10px 12px; color: var(--text); font-size: 13px; font-family: 'Roboto', 'Open Sans', sans-serif;
     outline: none; transition: border-color 0.2s;
   }
   .form-input:focus, .form-select:focus { border-color: var(--accent); }
@@ -256,7 +256,7 @@ window.dispatchEvent(new Event('firebaseReady'));
     margin-bottom: 8px; border: 1px solid var(--border);
   }
   .payment-info { display: flex; flex-direction: column; gap: 2px; }
-  .payment-date { font-size: 11px; color: var(--text3); font-family: 'JetBrains Mono', monospace; }
+  .payment-date { font-size: 11px; color: var(--text3); font-family: 'Roboto Mono', monospace; }
   .payment-note { font-size: 12px; color: var(--text2); }
 
   /* STOCK LEVEL */
@@ -285,8 +285,8 @@ window.dispatchEvent(new Event('firebaseReady'));
   .price-product { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
   .price-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
   .price-item { text-align: center; }
-  .price-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; font-family: 'JetBrains Mono', monospace; }
-  .price-val { font-size: 20px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+  .price-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.2px; font-family: 'Roboto Mono', monospace; }
+  .price-val { font-size: 20px; font-weight: 800; font-family: 'Roboto Mono', monospace; }
   .price-val.buy { color: var(--danger); }
   .price-val.sell { color: var(--accent3); }
   .price-val.credit { color: var(--warn); }
@@ -462,14 +462,14 @@ window.dispatchEvent(new Event('firebaseReady'));
   }
   @keyframes glow { 0%,100%{filter:drop-shadow(0 0 10px rgba(0,212,255,0.4))} 50%{filter:drop-shadow(0 0 24px rgba(0,212,255,0.8))} }
   .login-title { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
-  .login-sub { font-size: 12px; color: var(--text3); font-family: 'JetBrains Mono', monospace; }
+  .login-sub { font-size: 12px; color: var(--text3); font-family: 'Roboto Mono', monospace; }
 
   .login-field { margin-bottom: 16px; }
   .login-label { font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px; }
   .login-input {
     width: 100%; background: var(--surface2); border: 1px solid var(--border);
     border-radius: 10px; padding: 13px 16px; color: var(--text);
-    font-size: 14px; font-family: 'Syne', sans-serif; outline: none;
+    font-size: 14px; font-family: 'Roboto', 'Open Sans', sans-serif; outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
   }
   .login-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,212,255,0.1); }
@@ -479,7 +479,7 @@ window.dispatchEvent(new Event('firebaseReady'));
   .login-btn {
     width: 100%; padding: 14px; background: var(--accent); color: var(--bg);
     border: none; border-radius: 10px; font-size: 14px; font-weight: 800;
-    cursor: pointer; font-family: 'Syne', sans-serif;
+    cursor: pointer; font-family: 'Roboto', 'Open Sans', sans-serif;
     transition: all 0.2s; margin-top: 8px; letter-spacing: 0.5px;
   }
   .login-btn:hover { background: #33daff; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,212,255,0.35); }
@@ -487,14 +487,14 @@ window.dispatchEvent(new Event('firebaseReady'));
 
   .login-error {
     color: var(--danger); font-size: 12px; text-align: center;
-    margin-top: 12px; min-height: 18px; font-family: 'JetBrains Mono', monospace;
+    margin-top: 12px; min-height: 18px; font-family: 'Roboto Mono', monospace;
   }
-  .login-footer { text-align: center; margin-top: 24px; font-size: 11px; color: var(--text3); font-family: 'JetBrains Mono', monospace; }
+  .login-footer { text-align: center; margin-top: 24px; font-size: 11px; color: var(--text3); font-family: 'Roboto Mono', monospace; }
 
   .login-hint {
     background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.15);
     border-radius: 8px; padding: 10px 14px; font-size: 11px; color: var(--text2);
-    margin-top: 16px; font-family: 'JetBrains Mono', monospace; text-align: center;
+    margin-top: 16px; font-family: 'Roboto Mono', monospace; text-align: center;
   }
 
   /* Change password modal extras */
@@ -507,7 +507,7 @@ window.dispatchEvent(new Event('firebaseReady'));
   .topbar-user:hover { border-color: var(--accent); color: var(--accent); }
 
   .highlight { color: var(--accent); font-weight: 700; }
-  .text-mono { font-family: 'JetBrains Mono', monospace; }
+  .text-mono { font-family: 'Roboto Mono', monospace; }
 
   .empty-state { text-align: center; padding: 40px; color: var(--text3); }
   .empty-state .icon { font-size: 36px; margin-bottom: 8px; }
