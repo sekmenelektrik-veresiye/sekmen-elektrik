@@ -332,6 +332,19 @@ window.dispatchEvent(new Event('firebaseReady'));
   }
 
   /* YENİ ÖZELLİKLER */
+  .doviz-chip {
+    display:inline-flex; align-items:center; gap:5px;
+    background:var(--surface2); border:1px solid var(--border);
+    border-radius:20px; padding:3px 10px; font-size:11px;
+    font-family:'Roboto Mono',monospace; cursor:default;
+    transition:border-color 0.2s;
+  }
+  .doviz-chip:hover { border-color:var(--accent); }
+  .doviz-chip .flag { font-size:13px; }
+  .doviz-chip .rate { font-weight:700; color:var(--accent3); }
+  .doviz-chip .change-up { color:var(--accent3); font-size:10px; }
+  .doviz-chip .change-down { color:var(--danger); font-size:10px; }
+  @media (max-width:900px) { #dovizBar { display:none !important; } }
   .chart-bar-wrap { display:flex; flex-direction:column; gap:8px; padding:16px; }
   .chart-bar-row { display:flex; align-items:center; gap:10px; font-size:12px; }
   .chart-bar-label { width:60px; color:var(--text2); font-family:'JetBrains Mono',monospace; font-size:10px; text-align:right; flex-shrink:0; }
@@ -590,6 +603,7 @@ window.dispatchEvent(new Event('firebaseReady'));
       <div class="topbar-left">
         <div class="page-title" id="pageTitle">Genel Bakış</div>
         <div class="page-badge" id="pageBadge">DASHBOARD</div>
+        <div id="dovizBar" style="display:flex;gap:8px;align-items:center;margin-left:8px;flex-wrap:wrap"></div>
       </div>
       <div class="topbar-right">
         <button class="btn btn-secondary btn-sm" onclick="exportData()">⬇ Dışa Aktar</button>
@@ -4160,6 +4174,56 @@ function previewProforma() {
   document.getElementById('proformaPreviewContent').innerHTML = buildProformaHTML(tempPf);
   openModal('viewProforma');
 }
+
+// ============ DÖVİZ KURU ============
+let _dovizPrev = {};
+
+async function fetchDoviz() {
+  const bar = document.getElementById('dovizBar');
+  if (!bar) return;
+  try {
+    // Ücretsiz API - TCMB verilerini kullanan
+    const res = await fetch('https://api.exchangerate-api.com/v4/latest/TRY');
+    if (!res.ok) throw new Error('API hatası');
+    const data2 = await res.json();
+    const rates = data2.rates;
+
+    // TRY bazlı → 1 TRY kaç dolar/euro/sterlin
+    // Ters çevir: 1 USD = kaç TRY
+    const usd = rates.USD ? (1/rates.USD).toFixed(2) : null;
+    const eur = rates.EUR ? (1/rates.EUR).toFixed(2) : null;
+    const gbp = rates.GBP ? (1/rates.GBP).toFixed(2) : null;
+    const gold = null; // altın ayrı API gerektirir
+
+    const items = [];
+    if (usd) items.push({ flag:'🇺🇸', code:'USD', rate:usd, prev:_dovizPrev.USD });
+
+    _dovizPrev = { USD: usd };
+
+    bar.innerHTML = items.map(item => {
+      const diff = item.prev ? parseFloat(item.rate) - parseFloat(item.prev) : 0;
+      const arrow = diff > 0 ? `<span class="change-up">▲</span>` : diff < 0 ? `<span class="change-down">▼</span>` : '';
+      return `<div class="doviz-chip" title="${item.code}/TRY kuru">
+        <span class="flag">${item.flag}</span>
+        <span>${item.code}</span>
+        <span class="rate">₺${item.rate}</span>
+        ${arrow}
+      </div>`;
+    }).join('');
+
+  } catch(e) {
+    // Hata olursa sessizce geç
+    if (bar.innerHTML === '') {
+      bar.innerHTML = '<div class="doviz-chip" style="opacity:0.4" title="Kur bilgisi alınamadı">💱 —</div>';
+    }
+  }
+}
+
+// Sayfa yüklenince ve her 5 dakikada bir güncelle
+window.addEventListener('load', () => {
+  fetchDoviz();
+  setInterval(fetchDoviz, 5 * 60 * 1000);
+});
 
 // ============ INIT ============
 load();
