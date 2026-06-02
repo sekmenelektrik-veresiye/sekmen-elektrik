@@ -5231,14 +5231,29 @@ injectLogo();
 const kasaDateEl = document.getElementById('kasa-date');
 if (kasaDateEl) kasaDateEl.value = new Date().toISOString().split('T')[0];
 
-// Firebase sync başlat (module hazır olunca)
-if (window._firebaseReady) {
+// Firebase sync - sadece auth sonrası başlat
+function startFirebaseSyncAfterAuth() {
   initFirebaseSync();
   syncUsersFromFirebase().then(() => listenUsersFirebase());
+}
+
+// Firebase Auth state değişikliğini dinle
+function setupAuthStateListener() {
+  if (!window._fbAuth || !window._fbOnAuthStateChanged) return;
+  window._fbOnAuthStateChanged(window._fbAuth, (user) => {
+    if (user) {
+      // Kullanıcı Firebase Auth'a giriş yaptı - sync başlat
+      startFirebaseSyncAfterAuth();
+    }
+    // user null ise (çıkış yapıldı) sync yapmaya gerek yok
+  });
+}
+
+if (window._firebaseReady) {
+  setupAuthStateListener();
 } else {
   window.addEventListener('firebaseReady', () => {
-    initFirebaseSync();
-    syncUsersFromFirebase().then(() => listenUsersFirebase());
+    setupAuthStateListener();
   }, { once: true });
 }
 </script>
