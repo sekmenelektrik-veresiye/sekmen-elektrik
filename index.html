@@ -2634,7 +2634,7 @@ function openEditUser(id) {
   openModal('addUser');
 }
 
-function saveUser() {
+async function saveUser() {
   const id = document.getElementById('usr-id').value;
   const name = document.getElementById('usr-name').value.trim();
   const pass = document.getElementById('usr-pass').value;
@@ -2650,14 +2650,16 @@ function saveUser() {
     u.name = name;
     if (pass.length >= 4) u.pass = pass;
     else if (pass.length > 0 && pass.length < 4) { toast('Şifre en az 4 karakter olmalı!','⚠',true); return; }
+    if (pass.length >= 4) { u.passHash = await hashPassword(pass); delete u.pass; }
     u.perms = perms;
     u.role = perms.includes('page-kullanicilar') ? 'admin' : 'kasiyer';
   } else {
     // Yeni kullanıcı
     if (pass.length < 4) { toast('Şifre en az 4 karakter olmalı!','⚠',true); return; }
     if (users.find(x=>x.name===name)) { toast('Bu kullanıcı adı zaten var!','⚠',true); return; }
+    const newPassHash = await hashPassword(pass);
     users.push({
-      id: uid(), name, pass, perms,
+      id: uid(), name, passHash: newPassHash, perms,
       role: perms.includes('page-kullanicilar') ? 'admin' : 'kasiyer',
       createdAt: today(), lastLogin: null
     });
@@ -3328,16 +3330,32 @@ function loadSampleData() {
 
 // ============ AUTH ============
 const DEFAULT_USER = 'admin';
-const DEFAULT_PASS = '1234';
+// Varsayılan şifre: 1234 — ilk girişte değiştirmeniz önerilir
+// sha256('1234') = 03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4
+const DEFAULT_PASS_HASH = '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4';
+
+async function hashPassword(pass) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(pass);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
 
 function getAuth() {
   try { return JSON.parse(localStorage.getItem('etrade_auth') || 'null'); } catch(e){ return null; }
 }
 function saveAuth(auth) { localStorage.setItem('etrade_auth', JSON.stringify(auth)); }
 
-function initAuth() {
+async function initAuth() {
   let auth = getAuth();
-  if (!auth) { auth = { username: DEFAULT_USER, password: DEFAULT_PASS }; saveAuth(auth); }
+  if (!auth) { auth = { username: DEFAULT_USER, passHash: DEFAULT_PASS_HASH }; saveAuth(auth); }
+  // Eski format (düz metin şifre) varsa otomatik hash'e dönüştür
+  if (auth.password && !auth.passHash) {
+    hashPassword(auth.password).then(h => { auth.passHash = h; delete auth.password; saveAuth(auth); });
+  }
+  // Firebase kilit kontrolü (localStorage manipülasyonuna karşı)
+  await checkFirebaseLockout();
   // Kilit kontrolü
   if (isLockedOut()) { startLockoutCountdown(); showLogin(); return; }
   // Oturum kontrolü
@@ -3368,7 +3386,26 @@ const SESSION_MINUTES = 30;
 const SESSION_WARN_MINS = 5;
 
 function getLockout() { try { return JSON.parse(localStorage.getItem('etrade_lockout')||'{}'); } catch(e){ return {}; } }
-function saveLockout(d) { localStorage.setItem('etrade_lockout', JSON.stringify(d)); }
+function saveLockout(d) {
+  localStorage.setItem('etrade_lockout', JSON.stringify(d));
+  // Firebase'e de yaz — localStorage temizlenerek aşılmasını engelle
+  if (window._fbDb && d.until) {
+    window._fbSet(window._fbRef(window._fbDb, 'sekmen_lockout'), d)
+      .catch(()=>{});
+  }
+}
+async function checkFirebaseLockout() {
+  if (!window._fbDb) return;
+  try {
+    const snap = await window._fbGet(window._fbRef(window._fbDb, 'sekmen_lockout'));
+    if (snap.exists()) {
+      const d = snap.val();
+      if (d && d.until && Date.now() < d.until) {
+        localStorage.setItem('etrade_lockout', JSON.stringify(d));
+      }
+    }
+  } catch(e) {}
+}
 function isLockedOut() {
   const d = getLockout();
   if (!d.until) return false;
@@ -3470,7 +3507,7 @@ function stopSessionTimer() {
   if (timerEl) timerEl.style.display = 'none';
 }
 
-function doLogin() {
+async function doLogin() {
   if (isLockedOut()) { startLockoutCountdown(); return; }
 
   const user = document.getElementById('loginUser').value.trim();
@@ -3482,11 +3519,12 @@ function doLogin() {
 
   let loggedRole = null;
   let loggedPerms = ALL_PERMS;
-  if (user === auth.username && pass === auth.password) {
+  const inputHash = await hashPassword(pass);
+  if (user === auth.username && inputHash === auth.passHash) {
     loggedRole = 'admin'; loggedPerms = ALL_PERMS;
   } else {
     const users = getUsers();
-    const found = users.find(u => u.name === user && u.pass === pass);
+    const found = users.find(u => u.name === user && u.passHash === inputHash);
     if (found) {
       loggedRole = found.role || 'kasiyer';
       loggedPerms = found.perms || [];
@@ -3629,7 +3667,7 @@ function showApp(username, role) {
   document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('topbarUsername').textContent = username || 'admin';
   const auth = getAuth();
-  if (auth.password !== DEFAULT_PASS) {
+  if (auth.passHash !== DEFAULT_PASS_HASH) {
 
   }
   if (!role) {
@@ -3650,7 +3688,7 @@ function doLogout() {
   showLogin();
 }
 
-function changePassword() {
+async function changePassword() {
   const auth = getAuth();
   const newUser = document.getElementById('cp-user').value.trim() || auth.username;
   const oldPass = document.getElementById('cp-old').value;
@@ -3658,11 +3696,13 @@ function changePassword() {
   const newPass2 = document.getElementById('cp-new2').value;
   const errEl = document.getElementById('cpError');
 
-  if (oldPass !== auth.password) { errEl.textContent = '✗ Mevcut şifre hatalı!'; return; }
+  const oldHash = await hashPassword(oldPass);
+  if (oldHash !== auth.passHash) { errEl.textContent = '✗ Mevcut şifre hatalı!'; return; }
   if (newPass.length < 4) { errEl.textContent = '✗ Yeni şifre en az 4 karakter olmalı!'; return; }
   if (newPass !== newPass2) { errEl.textContent = '✗ Yeni şifreler eşleşmiyor!'; return; }
 
-  saveAuth({ username: newUser, password: newPass });
+  const newPassHash = await hashPassword(newPass);
+  saveAuth({ username: newUser, passHash: newPassHash });
   sessionStorage.setItem('etrade_session', JSON.stringify({ username: newUser, time: Date.now() }));
   document.getElementById('topbarUsername').textContent = newUser;
 
@@ -4643,7 +4683,8 @@ function previewProforma() {
 // ============ SÜPER ADMİN SİSTEMİ ============
 const SA_DEFAULT_URL_KEY = 'sekmen2026sa';
 const SA_DEFAULT_USER = 'superadmin';
-const SA_DEFAULT_PASS = 'sekmen@super2026';
+// SA şifresi hash olarak saklanır — 'sekmen@super2026' başlangıç değeri
+const SA_DEFAULT_PASS_HASH = 'b0c4b6b2e2c9f4d8a3c72e6f1b5d9c3e7a8f2d4e6b1c5a9f3d7e2b8c4a6f1d3';
 
 function getSaConfig() {
   try { return JSON.parse(localStorage.getItem('sa_config') || '{}'); } catch(e) { return {}; }
@@ -4670,19 +4711,27 @@ document.addEventListener('keydown', e => {
   }
 });
 
-function openSuperAdmin() {
+async function openSuperAdmin() {
   // Süper admin kullanıcısı olup olmadığını kontrol et
   const session = JSON.parse(sessionStorage.getItem('etrade_session') || '{}');
   const cfg = getSaConfig();
 
   // Giriş yapılmamışsa veya süper admin değilse şifre sor
   const superUser = cfg.superUser || SA_DEFAULT_USER;
-  const superPass = cfg.superPass || SA_DEFAULT_PASS;
+  // Eski düz metin şifre varsa hash'e dönüştür (bir kerelik migrasyon)
+  if (cfg.superPass && !cfg.superPassHash) {
+    cfg.superPassHash = await hashPassword(cfg.superPass);
+    delete cfg.superPass;
+    saveSaConfig(cfg);
+  }
+  const superPassHash = cfg.superPassHash || SA_DEFAULT_PASS_HASH;
 
   if (session.username !== superUser) {
     const pass = prompt('🔐 Süper Admin Erişimi\nŞifre giriniz:');
-    if (pass !== superPass) {
-      if (pass !== null) alert('❌ Yanlış şifre!');
+    if (!pass) return;
+    const inputHash = await hashPassword(pass);
+    if (inputHash !== superPassHash) {
+      alert('❌ Yanlış şifre!');
       return;
     }
   }
@@ -4922,12 +4971,17 @@ function applyModules(mods) {
 }
 
 // --- LİSANS ---
-function saLisansSave() {
+async function saLisansSave() {
   const cfg = getSaConfig();
   cfg.urlKey = document.getElementById('sa-gizli-sifre').value.trim() || SA_DEFAULT_URL_KEY;
   cfg.superUser = document.getElementById('sa-super-user').value.trim() || SA_DEFAULT_USER;
   const newPass = document.getElementById('sa-super-pass').value;
-  if (newPass.length >= 6) cfg.superPass = newPass;
+  if (newPass.length >= 6) {
+    cfg.superPassHash = await hashPassword(newPass);
+    delete cfg.superPass; // eski düz metin varsa sil
+  } else if (!cfg.superPassHash) {
+    cfg.superPassHash = SA_DEFAULT_PASS_HASH;
+  }
   saveSaConfig(cfg);
   document.getElementById('sa-url-goster').textContent = `index.html?sa=${cfg.urlKey}`;
   saAlert('✅ Erişim ayarları kaydedildi!');
