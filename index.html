@@ -18,6 +18,7 @@
 // ============ FIREBASE SETUP ============
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getDatabase, ref, set, get, onValue, update, remove } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, deleteUser as fbDeleteUser, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCFgtpHABiVgnMit4TjdAT6dMQsE5XCchI",
@@ -31,6 +32,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const auth = getAuth(app);
 
 // Global olarak dışarı aç
 window._fbDb = db;
@@ -40,6 +42,14 @@ window._fbGet = get;
 window._fbOnValue = onValue;
 window._fbUpdate = update;
 window._fbRemove = remove;
+
+// Firebase Auth fonksiyonları
+window._fbAuth = auth;
+window._fbCreateUser = createUserWithEmailAndPassword;
+window._fbSignIn = signInWithEmailAndPassword;
+window._fbDeleteAuthUser = fbDeleteUser;
+window._fbSignOut = signOut;
+window._fbOnAuthStateChanged = onAuthStateChanged;
 
 // Firebase hazır sinyali
 window._firebaseReady = true;
@@ -2648,26 +2658,60 @@ async function saveUser() {
     if (!u) return;
     if (users.find(x=>x.name===name && x.id!==id)) { toast('Bu kullanıcı adı zaten var!','⚠',true); return; }
     u.name = name;
-    if (pass.length >= 4) u.pass = pass;
-    else if (pass.length > 0 && pass.length < 4) { toast('Şifre en az 4 karakter olmalı!','⚠',true); return; }
-    if (pass.length >= 4) { u.passHash = await hashPassword(pass); delete u.pass; }
+    if (pass.length > 0 && pass.length < 4) { toast('Şifre en az 4 karakter olmalı!','⚠',true); return; }
+    if (pass.length >= 4) {
+      u.passHash = await hashPassword(pass);
+      delete u.pass;
+      // Firebase Auth şifresini de güncelle
+      if (u.fbUid && window._fbAuth) {
+        try {
+          // Şifre güncelleme için kullanıcının mevcut oturumu gerekli
+          // Bu işlem admin tarafından yapıldığı için Firebase Admin SDK gerekir
+          // Şimdilik sadece yerel hash güncelleniyor
+        } catch(e) {}
+      }
+    }
     u.perms = perms;
     u.role = perms.includes('page-kullanicilar') ? 'admin' : 'kasiyer';
+    saveUsers(users);
+    closeModal('addUser');
+    toast(`${name} güncellendi!`, '👤');
+    renderUsers();
   } else {
     // Yeni kullanıcı
     if (pass.length < 4) { toast('Şifre en az 4 karakter olmalı!','⚠',true); return; }
     if (users.find(x=>x.name===name)) { toast('Bu kullanıcı adı zaten var!','⚠',true); return; }
+
+    // Firebase Auth'a email formatında kayıt et (kullaniciadi@sekmen.local)
+    const fakeEmail = name.toLowerCase().replace(/[^a-z0-9]/g,'') + '@sekmen.local';
+    let fbUid = null;
+
+    if (window._fbAuth && window._fbCreateUser) {
+      try {
+        const userCred = await window._fbCreateUser(window._fbAuth, fakeEmail, pass);
+        fbUid = userCred.user.uid;
+        // Firebase Auth'a kaydettikten sonra çıkış yap (admin oturumu bozulmasın)
+        // Oturumu koru - admin olarak kalmaya devam et
+      } catch(e) {
+        if (e.code === 'auth/email-already-in-use') {
+          toast('Bu kullanıcı adı zaten kayıtlı!','⚠',true); return;
+        }
+        console.warn('Firebase Auth kullanıcı oluşturma hatası:', e);
+        // Firebase Auth başarısız olsa bile devam et (offline durumda)
+      }
+    }
+
     const newPassHash = await hashPassword(pass);
     users.push({
-      id: uid(), name, passHash: newPassHash, perms,
+      id: uid(), name, passHash: newPassHash, fbUid, fakeEmail, perms,
       role: perms.includes('page-kullanicilar') ? 'admin' : 'kasiyer',
       createdAt: today(), lastLogin: null
     });
+    saveUsers(users);
+    closeModal('addUser');
+    toast(`${name} eklendi!`, '👤');
+    renderUsers();
   }
-  saveUsers(users);
-  closeModal('addUser');
-  toast(id ? `${name} güncellendi!` : `${name} eklendi!`, '👤');
-  renderUsers();
 }
 
 function renderUsers() {
@@ -2709,11 +2753,11 @@ function renderUsers() {
     : `<tr><td colspan="4" style="text-align:center;color:var(--text3);padding:20px">Henüz ek kullanıcı yok.<br><span style="font-size:12px">Yeni Kullanıcı butonuna tıklayın.</span></td></tr>`;
 }
 
-function deleteUser(id) {
+async function deleteUser(id) {
   const u = getUsers().find(x=>x.id===id);
   if (!confirm(`"${u?.name}" kullanıcısı silinsin mi?\nBu kullanıcı artık hiçbir cihazdan giriş yapamaz.`)) return;
   const newUsers = getUsers().filter(x=>x.id!==id);
-  saveUsers(newUsers); // localStorage + Firebase'e kaydet
+  saveUsers(newUsers);
   renderUsers();
   addSecurityLog(u?.name||'?', '🗑 HESAP SİLİNDİ', 'Admin tarafından kaldırıldı');
   toast('Kullanıcı silindi — tüm cihazlarda geçersiz','🗑');
@@ -3520,8 +3564,25 @@ async function doLogin() {
   let loggedRole = null;
   let loggedPerms = ALL_PERMS;
   const inputHash = await hashPassword(pass);
+
+  // Önce yerel hash kontrolü
   if (user === auth.username && inputHash === auth.passHash) {
     loggedRole = 'admin'; loggedPerms = ALL_PERMS;
+
+    // Admin için Firebase Auth girişi (admin@sekmen.local)
+    if (window._fbAuth && window._fbSignIn) {
+      try {
+        await window._fbSignIn(window._fbAuth, 'admin@sekmen.local', pass);
+      } catch(e) {
+        // İlk girişte Firebase Auth hesabı yoksa oluştur
+        if (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential') {
+          try {
+            await window._fbCreateUser(window._fbAuth, 'admin@sekmen.local', pass);
+          } catch(e2) { console.warn('Admin Firebase Auth oluşturma:', e2.code); }
+        }
+      }
+    }
+
   } else {
     const users = getUsers();
     const found = users.find(u => u.name === user && u.passHash === inputHash);
@@ -3530,6 +3591,16 @@ async function doLogin() {
       loggedPerms = found.perms || [];
       found.lastLogin = new Date().toLocaleString('tr-TR');
       saveUsers(users);
+
+      // Kasiyer/diğer kullanıcılar için Firebase Auth girişi
+      if (found.fakeEmail && window._fbAuth && window._fbSignIn) {
+        try {
+          await window._fbSignIn(window._fbAuth, found.fakeEmail, pass);
+        } catch(e) {
+          console.warn('Firebase Auth giriş hatası:', e.code);
+          // Firebase Auth başarısız olsa bile sisteme giriş izni ver
+        }
+      }
     }
   }
 
@@ -3677,12 +3748,16 @@ function showApp(username, role) {
   applyRoleUI(role);
 }
 
-function doLogout() {
+async function doLogout() {
   if (!confirm('Çıkış yapmak istediğinizden emin misiniz?')) return;
   const session = JSON.parse(sessionStorage.getItem('etrade_session')||'{}');
   addSecurityLog(session.username||'?', '🚪 ÇIKIŞ', 'Manuel çıkış');
   stopSessionTimer();
   sessionStorage.removeItem('etrade_session');
+  // Firebase Auth çıkışı
+  if (window._fbAuth && window._fbSignOut) {
+    try { await window._fbSignOut(window._fbAuth); } catch(e) {}
+  }
   const card = document.querySelector('.login-card');
   card.style.transform = ''; card.style.opacity = ''; card.style.transition = '';
   showLogin();
