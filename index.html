@@ -546,6 +546,144 @@ window.dispatchEvent(new Event('firebaseReady'));
   @media print {
     .login-screen, .sidebar, .topbar, .modal-overlay, .toast { display: none !important; }
   }
+
+  /* ===== TAM EKRAN FİYAT SORGULAMA ===== */
+  .fq-overlay {
+    position: fixed; inset: 0; z-index: 8000;
+    background: #1a56db;
+    display: none; align-items: center; justify-content: center;
+    animation: fqFadeIn 0.25s ease;
+  }
+  .fq-overlay.active { display: flex; }
+  @keyframes fqFadeIn { from{opacity:0} to{opacity:1} }
+
+  .fq-card {
+    background: #fff; border-radius: 16px;
+    width: 480px; max-width: 94vw;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.35);
+    overflow: hidden;
+    animation: fqSlideUp 0.3s ease;
+  }
+  @keyframes fqSlideUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+  .fq-header {
+    padding: 14px 18px 10px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .fq-barcode-btn {
+    background: #fff; border: 1.5px solid #6b7280; border-radius: 7px;
+    padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer;
+    color: #374151; transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+  }
+  .fq-barcode-btn:hover { border-color: #1a56db; color: #1a56db; }
+  .fq-close-btn {
+    background: none; border: none; cursor: pointer;
+    color: #9ca3af; font-size: 22px; line-height: 1; padding: 2px 6px;
+    transition: color 0.2s; border-radius: 6px;
+  }
+  .fq-close-btn:hover { color: #374151; background: #f3f4f6; }
+
+  .fq-logo-area {
+    padding: 20px 24px 16px;
+    display: flex; align-items: center; justify-content: center;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  .fq-logo-text {
+    text-align: center;
+  }
+  .fq-logo-text .fq-brand { font-size: 22px; font-weight: 900; color: #1a56db; letter-spacing: -0.5px; }
+  .fq-logo-text .fq-sub { font-size: 11px; color: #6b7280; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; }
+
+  .fq-body { padding: 22px 24px; }
+
+  .fq-search-wrap {
+    position: relative; margin-bottom: 14px;
+  }
+  .fq-search-input {
+    width: 100%; padding: 13px 16px; font-size: 15px;
+    border: 1.5px solid #d1d5db; border-radius: 10px;
+    outline: none; color: #111827; background: #f9fafb;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    font-family: 'Roboto', sans-serif;
+  }
+  .fq-search-input:focus { border-color: #1a56db; box-shadow: 0 0 0 3px rgba(26,86,219,0.12); background: #fff; }
+  .fq-search-input::placeholder { color: #9ca3af; }
+
+  .fq-qty-row {
+    display: flex; gap: 10px; align-items: center; margin-bottom: 14px;
+  }
+  .fq-qty-label { font-size: 13px; color: #6b7280; font-weight: 600; white-space: nowrap; }
+  .fq-qty-input {
+    width: 80px; padding: 9px 12px; font-size: 14px; font-weight: 700;
+    border: 1.5px solid #d1d5db; border-radius: 8px; outline: none;
+    color: #111827; background: #f9fafb; text-align: center;
+    transition: border-color 0.2s;
+  }
+  .fq-qty-input:focus { border-color: #1a56db; background: #fff; }
+
+  .fq-search-btn {
+    width: 100%; padding: 13px; background: #1a56db; color: #fff;
+    border: none; border-radius: 10px; font-size: 15px; font-weight: 700;
+    cursor: pointer; font-family: 'Roboto', sans-serif;
+    transition: all 0.2s; letter-spacing: 0.3px;
+  }
+  .fq-search-btn:hover { background: #1d4ed8; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,86,219,0.3); }
+  .fq-search-btn:active { transform: translateY(0); }
+
+  /* Dropdown suggestions */
+  .fq-suggestions {
+    position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+    background: #fff; border: 1.5px solid #d1d5db; border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 10;
+    max-height: 200px; overflow-y: auto; display: none;
+  }
+  .fq-suggestions.open { display: block; }
+  .fq-suggestion-item {
+    padding: 10px 14px; cursor: pointer; font-size: 13px;
+    color: #374151; border-bottom: 1px solid #f3f4f6;
+    transition: background 0.15s;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .fq-suggestion-item:last-child { border-bottom: none; }
+  .fq-suggestion-item:hover, .fq-suggestion-item.highlighted { background: #eff6ff; color: #1a56db; }
+  .fq-suggestion-code { font-size: 11px; color: #9ca3af; font-family: 'Roboto Mono', monospace; }
+
+  /* Result */
+  .fq-result {
+    margin-top: 16px; background: #f0f9ff;
+    border: 1.5px solid #bae6fd; border-radius: 12px; padding: 18px;
+    display: none;
+  }
+  .fq-result.show { display: block; }
+  .fq-result-name { font-size: 16px; font-weight: 800; color: #0c4a6e; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .fq-result-code { font-size: 12px; color: #64748b; font-family: 'Roboto Mono', monospace; font-weight: 400; }
+  .fq-prices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .fq-price-box {
+    background: #fff; border-radius: 10px; padding: 12px 14px; text-align: center;
+    border: 1px solid #e0f2fe;
+  }
+  .fq-price-box .fq-plabel { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; margin-bottom: 4px; }
+  .fq-price-box .fq-pval { font-size: 22px; font-weight: 900; font-family: 'Roboto Mono', monospace; }
+  .fq-price-box.sell .fq-pval { color: #16a34a; }
+  .fq-price-box.credit .fq-pval { color: #d97706; }
+  .fq-price-box.buy .fq-pval { color: #dc2626; }
+  .fq-price-sub { font-size: 10px; color: #94a3b8; margin-top: 2px; }
+  .fq-result-footer {
+    margin-top: 12px; padding-top: 10px; border-top: 1px solid #bae6fd;
+    display: flex; justify-content: space-between; font-size: 12px; color: #64748b;
+  }
+  .fq-not-found {
+    margin-top: 16px; background: #fef2f2; border: 1.5px solid #fecaca;
+    border-radius: 10px; padding: 16px; text-align: center;
+    color: #dc2626; font-size: 13px; font-weight: 600; display: none;
+  }
+  .fq-not-found.show { display: block; }
+
+  .fq-footer {
+    padding: 14px 24px; border-top: 1px solid #f3f4f6;
+    text-align: center; font-size: 12px; color: #9ca3af;
+  }
 </style>
 </head>
 <body>
@@ -578,6 +716,44 @@ window.dispatchEvent(new Event('firebaseReady'));
     <div style="margin-top:16px;text-align:center;font-size:11px;color:var(--text3);font-family:'Roboto Mono',monospace;letter-spacing:0.3px">
       © 2026 <span style="color:var(--accent);font-weight:600">Sekmen Elektrik-Elektronik</span><br>
       <span style="font-size:10px;opacity:0.6">Tüm hakları saklıdır.</span>
+    </div>
+  </div>
+</div>
+
+<!-- TAM EKRAN FİYAT SORGULAMA -->
+<div class="fq-overlay" id="fqOverlay">
+  <div class="fq-card">
+    <div class="fq-header">
+      <button class="fq-barcode-btn" onclick="fqBarcodeMode()" title="Barkod okuyucu ile ara">
+        📷 Barkod Okut
+      </button>
+      <button class="fq-close-btn" onclick="closeFiyatSorgula()" title="Kapat">×</button>
+    </div>
+    <div class="fq-logo-area">
+      <div class="fq-logo-text">
+        <div class="fq-brand">⚡ Sekmen Elektrik-Elektronik</div>
+        <div class="fq-sub">Fiyat Sorgulama Sistemi</div>
+      </div>
+    </div>
+    <div class="fq-body">
+      <div class="fq-search-wrap">
+        <input class="fq-search-input" id="fqSearchInput" type="text"
+          placeholder="Ürün adı veya kodu girin..."
+          oninput="fqOnInput(this.value)"
+          onkeydown="fqKeyDown(event)"
+          autocomplete="off">
+        <div class="fq-suggestions" id="fqSuggestions"></div>
+      </div>
+      <div class="fq-qty-row">
+        <span class="fq-qty-label">Miktar:</span>
+        <input class="fq-qty-input" id="fqQtyInput" type="number" value="1" min="1" oninput="fqShowResult()">
+      </div>
+      <button class="fq-search-btn" onclick="fqDoSearch()">🔍 Fiyat Sorgula</button>
+      <div class="fq-result" id="fqResult"></div>
+      <div class="fq-not-found" id="fqNotFound">❌ Ürün bulunamadı. Farklı bir arama deneyin.</div>
+    </div>
+    <div class="fq-footer">
+      Destek için: <b>Sekmen Elektrik-Elektronik</b>
     </div>
   </div>
 </div>
@@ -628,7 +804,7 @@ window.dispatchEvent(new Event('firebaseReady'));
       <div class="nav-item" onclick="navigate('stok')">
         <span class="icon">📦</span><span>Stok Takibi</span>
       </div>
-      <div class="nav-item" onclick="navigate('fiyat')">
+      <div class="nav-item" onclick="openFiyatSorgula()">
         <span class="icon">🏷️</span><span>Fiyat Sorgula</span>
       </div>
       <div class="nav-section">İşlemler</div>
@@ -2707,6 +2883,168 @@ function updatePriceQuerySelect() {
   const sel = document.getElementById('priceQuerySelect');
   sel.innerHTML = '<option value="">-- Ürün seçin --</option>' + data.products.map(p => `<option value="${p.id}">${p.name} (${p.code})</option>`).join('');
 }
+
+// ===== TAM EKRAN FİYAT SORGULAMA =====
+let _fqSelectedProduct = null;
+let _fqHighlightIdx = -1;
+
+function openFiyatSorgula() {
+  const overlay = document.getElementById('fqOverlay');
+  overlay.classList.add('active');
+  document.getElementById('fqSearchInput').value = '';
+  document.getElementById('fqQtyInput').value = '1';
+  document.getElementById('fqResult').classList.remove('show');
+  document.getElementById('fqResult').innerHTML = '';
+  document.getElementById('fqNotFound').classList.remove('show');
+  document.getElementById('fqSuggestions').classList.remove('open');
+  _fqSelectedProduct = null;
+  setTimeout(() => document.getElementById('fqSearchInput').focus(), 100);
+}
+
+function closeFiyatSorgula() {
+  document.getElementById('fqOverlay').classList.remove('active');
+  document.getElementById('fqSuggestions').classList.remove('open');
+}
+
+function fqOnInput(val) {
+  _fqSelectedProduct = null;
+  document.getElementById('fqResult').classList.remove('show');
+  document.getElementById('fqNotFound').classList.remove('show');
+  _fqHighlightIdx = -1;
+  const q = val.trim().toLowerCase();
+  const sugg = document.getElementById('fqSuggestions');
+  if (!q) { sugg.classList.remove('open'); return; }
+  const matches = data.products.filter(p =>
+    p.name.toLowerCase().includes(q) || p.code.toLowerCase().includes(q)
+  ).slice(0, 8);
+  if (!matches.length) { sugg.classList.remove('open'); return; }
+  sugg.innerHTML = matches.map((p, i) => `
+    <div class="fq-suggestion-item" data-idx="${i}" data-id="${p.id}"
+      onmousedown="fqSelectProduct('${p.id}')"
+      onmouseover="fqHighlight(${i})">
+      <span>${p.name}</span>
+      <span class="fq-suggestion-code">${p.code}</span>
+    </div>
+  `).join('');
+  sugg._matches = matches;
+  sugg.classList.add('open');
+}
+
+function fqHighlight(idx) {
+  _fqHighlightIdx = idx;
+  document.querySelectorAll('.fq-suggestion-item').forEach((el, i) => {
+    el.classList.toggle('highlighted', i === idx);
+  });
+}
+
+function fqKeyDown(e) {
+  const sugg = document.getElementById('fqSuggestions');
+  const items = sugg.querySelectorAll('.fq-suggestion-item');
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    _fqHighlightIdx = Math.min(_fqHighlightIdx + 1, items.length - 1);
+    fqHighlight(_fqHighlightIdx);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    _fqHighlightIdx = Math.max(_fqHighlightIdx - 1, 0);
+    fqHighlight(_fqHighlightIdx);
+  } else if (e.key === 'Enter') {
+    if (_fqHighlightIdx >= 0 && sugg._matches && sugg._matches[_fqHighlightIdx]) {
+      fqSelectProduct(sugg._matches[_fqHighlightIdx].id);
+    } else {
+      fqDoSearch();
+    }
+  } else if (e.key === 'Escape') {
+    closeFiyatSorgula();
+  }
+}
+
+function fqSelectProduct(id) {
+  const p = data.products.find(x => x.id === id);
+  if (!p) return;
+  _fqSelectedProduct = p;
+  document.getElementById('fqSearchInput').value = p.name + ' (' + p.code + ')';
+  document.getElementById('fqSuggestions').classList.remove('open');
+  fqShowResult();
+}
+
+function fqDoSearch() {
+  document.getElementById('fqSuggestions').classList.remove('open');
+  if (_fqSelectedProduct) { fqShowResult(); return; }
+  const q = document.getElementById('fqSearchInput').value.trim().toLowerCase();
+  if (!q) return;
+  const p = data.products.find(x =>
+    x.name.toLowerCase().includes(q) || x.code.toLowerCase().includes(q)
+  );
+  if (p) { fqSelectProduct(p.id); }
+  else {
+    document.getElementById('fqResult').classList.remove('show');
+    document.getElementById('fqNotFound').classList.add('show');
+  }
+}
+
+function fqShowResult() {
+  const p = _fqSelectedProduct;
+  if (!p) return;
+  const qty = parseFloat(document.getElementById('fqQtyInput').value) || 1;
+  const fmt = n => n.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ₺';
+
+  const alisHTML = _buyPriceVisible ? `
+    <div class="fq-price-box buy">
+      <div class="fq-plabel">Alış Fiyatı</div>
+      <div class="fq-pval">${fmt(p.buyPrice * qty)}</div>
+      ${qty > 1 ? `<div class="fq-price-sub">Birim: ${fmt(p.buyPrice)}</div>` : ''}
+    </div>` : '';
+
+  const resultDiv = document.getElementById('fqResult');
+  resultDiv.innerHTML = `
+    <div class="fq-result-name">
+      ⚡ ${p.name}
+      <span class="fq-result-code">${p.code}</span>
+    </div>
+    <div class="fq-prices">
+      <div class="fq-price-box sell">
+        <div class="fq-plabel">Satış Fiyatı</div>
+        <div class="fq-pval">${fmt(p.sellPrice * qty)}</div>
+        ${qty > 1 ? `<div class="fq-price-sub">Birim: ${fmt(p.sellPrice)}</div>` : ''}
+      </div>
+      <div class="fq-price-box credit">
+        <div class="fq-plabel">Veresiye Fiyatı</div>
+        <div class="fq-pval">${p.creditPrice ? fmt(p.creditPrice * qty) : '—'}</div>
+        ${(qty > 1 && p.creditPrice) ? `<div class="fq-price-sub">Birim: ${fmt(p.creditPrice)}</div>` : ''}
+      </div>
+      ${alisHTML}
+    </div>
+    <div class="fq-result-footer">
+      <span>📦 Stok: <b>${p.stock} ${p.unit || 'Adet'}</b></span>
+      <span>📍 Raf: <b>${p.shelf || '—'}</b></span>
+    </div>
+  `;
+  resultDiv.classList.add('show');
+  document.getElementById('fqNotFound').classList.remove('show');
+}
+
+function fqBarcodeMode() {
+  toast('Barkod okutun veya kodunu yazın...', '📷');
+  const input = document.getElementById('fqSearchInput');
+  input.value = '';
+  input.focus();
+  input.placeholder = 'Barkod okutun...';
+  setTimeout(() => { input.placeholder = 'Ürün adı veya kodu girin...'; }, 5000);
+}
+
+// Overlay dışına tıklayınca kapat
+document.addEventListener('click', function(e) {
+  const overlay = document.getElementById('fqOverlay');
+  if (overlay && overlay.classList.contains('active') && e.target === overlay) {
+    closeFiyatSorgula();
+  }
+  // Suggestions dışına tıklayınca kapat
+  const sugg = document.getElementById('fqSuggestions');
+  if (sugg && !sugg.contains(e.target) && e.target.id !== 'fqSearchInput') {
+    sugg.classList.remove('open');
+  }
+});
 
 
 function openEditPrice(pid) {
